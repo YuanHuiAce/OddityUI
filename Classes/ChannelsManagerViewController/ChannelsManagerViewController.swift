@@ -40,6 +40,10 @@ public class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCo
         self.initialPagerTabStripMethod()
         
         /**
+         *  刷新频道
+         */
+        ChannelAPI.nsChsGet()
+        /**
          *  当频道数据发生了变化，进行视图的重新排序制作操作
          */
         self.notificationToken = self.cResults.addNotificationBlock { (_) in
