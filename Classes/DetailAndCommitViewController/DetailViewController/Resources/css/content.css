@@ -1,0 +1,79 @@
+/*
+ global
+ */
+
+body {
+    font-family: arial, sans-serif;
+    margin: 17 18 0 18;
+    font-weight: normal;
+    background-color: #ffffff;
+    word-wrap: break-word;
+    -webkit-user-select: none;
+}
+#title_section {
+    padding: 0 0 0 0;
+    -webkit-user-select: text;
+}
+#title {
+    padding: 0 0 0 0;
+    color: #1a1a1a;
+}
+#subtitle {
+    padding: 10 0 0 0;
+    color: #808080;
+    -webkit-user-select: text;
+}
+html {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    line-height: 1.6
+}
+body {
+    -webkit-touch-callout: none;
+    line-height: inherit
+}
+
+/* 设置超链接颜色和*/
+
+a {
+    color: #607fa6;
+    text-decoration: none
+}
+#body_section {
+    color: #1f1f1f;
+    overflow-x: hidden;
+    -webkit-user-select: text;
+}
+
+#video {
+    margin: 0 0 10 0;
+}
+
+/* 分割线颜色和宽度 */
+.line-class {
+    padding: 0 18 0 18 ;color: #e4e4e4; size: 0.5;
+}
+
+.lazy {
+    display: none;
+}
+
+
+.imgDiv{
+
+ margin: 10px 0px 10px 0px;
+}
+
+
+
+.customProgress{
+
+ height: 1px;
+ margin-bottom: 0px;
+ overflow: hidden;
+ border-radius: 0px;
+}
+
+.customProgressBar{
+    background-color: #90d7ec;
+}

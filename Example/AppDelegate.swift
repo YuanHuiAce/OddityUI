@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import OddityUI
+import OddityModal
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        ChannelAPI.nsChsGet()
+        
+        window?.rootViewController = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
+        
         return true
     }
 

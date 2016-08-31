@@ -1,0 +1,35 @@
+<html manifest="appcache.manifest">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <script src="jquery.js"></script>
+    <link href='bootstrap.min.css' rel='stylesheet' />
+    <link href='content.css' rel='stylesheet' />
+
+    <style type="text/css">
+        {{titleStyle}}
+        {{subtitleStyle}}
+        {{bodysectionStyle}}
+    </style>
+
+</head>
+
+<body id="container">
+    <div id="section">
+        <div id = "imhg"></div>
+        
+        <div id="title_section">
+            <div id='title'>{{title}}</div>
+            <div id='subtitle'>{{source}} <span aria-hidden="true">{{ptime}}</span><span aria-hidden="true">{{comment}}</span></div>
+        </div>
+        <HR class = "line-class" />
+        <div id="body_section">
+            {{body}}
+        </div>
+    </div>
+</body>
+
+<script src="index.js"></script>
+</html>
