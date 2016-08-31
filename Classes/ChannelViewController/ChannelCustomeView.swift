@@ -22,7 +22,7 @@ class ChannelCollectionViewCell: UICollectionViewCell {
         self.channelNameLabel.textColor = channel.id == 1 ? UIColor.a_color4 : UIColor.blackColor()
         self.channelNameLabel.text = channel.cname
         self.channelStateImageView.hidden = channel.id == 1
-//        self.channelStateImageView.image = channel.isdelete == 0 ? UIImage(named: "delete") : UIImage(named: "add")
+        self.channelStateImageView.image = channel.isdelete == 0 ? UIImage.OddityImageByName("delete") : UIImage.OddityImageByName("add")
     }
     
     override func drawRect(rect: CGRect) {
