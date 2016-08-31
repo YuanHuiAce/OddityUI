@@ -45,6 +45,14 @@ pod 'OddityUI'
 
 ## 使用
 
+iOS9引入了新特性App Transport Security (ATS)。
+
+新特性要求App内访问的网络必须使用HTTPS协议。
+但是现在公司的项目使用的是HTTP协议，使用私有加密方式保证数据安全。现在也不能马上改成HTTPS协议传输。
+
+请在Info.plist中添加NSAppTransportSecurity类型Dictionary。
+在NSAppTransportSecurity下添加NSAllowsArbitraryLoads类型Boolean,值设为YES
+
 Swift :
 ````swift
 
