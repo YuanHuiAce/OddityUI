@@ -23,24 +23,18 @@ class CustomViewControllerDismissedAnimation:NSObject,UIViewControllerAnimatedTr
         let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
         
         let containerView = transitionContext.containerView()
-        containerView!.addSubview(toViewController.view)
-        containerView!.addSubview(fromViewController.view)
+        containerView!.insertSubview(toViewController.view, atIndex: 0)
         
-        toViewController.view.frame = transitionContext.finalFrameForViewController(toViewController)
-        
-        dispatch_async(dispatch_get_main_queue()) { 
+        UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: {
             
             toViewController.view.transform = CGAffineTransformIdentity
-            toViewController.view.transform = CGAffineTransformScale(toViewController.view.transform, 0.9, 0.9)
+            fromViewController.view.transform = CGAffineTransformTranslate(fromViewController.view.transform, fromViewController.view.bounds.width, 0)
             
-            UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: {
-                
-                toViewController.view.transform = CGAffineTransformIdentity
-                fromViewController.view.transform = CGAffineTransformTranslate(fromViewController.view.transform, fromViewController.view.bounds.width, 0)
-            }) { (_) in
-                
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
-            }
+            toViewController.view.frame = transitionContext.finalFrameForViewController(toViewController)
+            
+        }) { (_) in
+            
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
         }
     }
 }
@@ -67,11 +61,10 @@ class CustomViewControllerPresentdAnimation:NSObject,UIViewControllerAnimatedTra
         UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: {
             
             toViewController.view.transform = CGAffineTransformIdentity
-            fromViewController.view.transform = CGAffineTransformScale(fromViewController.view.transform, 0.9, 0.9)
+            fromViewController.view.transform = CGAffineTransformScale(fromViewController.view.transform, 0.95, 0.95)
         }) { (_) in
             
             transitionContext.completeTransition(true)
-            fromViewController.view.transform = CGAffineTransformIdentity
         }
     }
 }

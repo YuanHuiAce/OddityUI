@@ -8,7 +8,6 @@
 
 import UIKit
 import MJRefresh
-import OddityModal
 import RealmSwift
 
 extension CommitViewController{

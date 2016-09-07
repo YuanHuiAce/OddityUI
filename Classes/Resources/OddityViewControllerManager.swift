@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 
 public class OddityViewControllerManager: NSObject {
     

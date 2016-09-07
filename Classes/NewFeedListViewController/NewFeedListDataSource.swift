@@ -7,10 +7,9 @@
 //
 
 import UIKit
-import OddityModal
 
 extension NewFeedListViewController:UITableViewDataSource{
-
+    
     /**
      设置新闻的个数
      
@@ -138,25 +137,25 @@ extension NewFeedListViewController:UITableViewDataSource{
             self.tableView.setContentOffset(toPoint, animated: true)
         }
         
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(delayInSeconds * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
-                    self.delegate.ClickNoLikeButtonOfUITableViewCell?(cell, finish: { (cancel) in
-        
-                        if !cancel {
-        
-                            self.newsResults[indexPath.row].suicide()
-        
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
-        
-                                self.showNoInterest()
-        
-                                self.tableView.reloadData()
-                            }
-                        }else{
-        
-                            self.tableView.reloadData()
-                        }
-                    })
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(delayInSeconds * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
+            self.delegate.ClickNoLikeButtonOfUITableViewCell?(cell, finish: { (cancel) in
+                
+                if !cancel {
+                    
+                    self.newsResults[indexPath.row].suicide()
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
+                        
+                        self.showNoInterest()
+                        
+                        self.tableView.reloadData()
+                    }
+                }else{
+                    
+                    self.tableView.reloadData()
                 }
+            })
+        }
     }
     
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 import WebKit
 
 extension DetailViewController:WKNavigationDelegate{

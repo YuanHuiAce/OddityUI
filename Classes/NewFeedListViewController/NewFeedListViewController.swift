@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 import XLPagerTabStrip
 import RealmSwift
 
@@ -149,7 +148,6 @@ extension NewContent{
                 body += "<p>\(txt)</p>"
             }
         }
-        
         
         //        body+="<br/><hr style=\"height:1.5px;border:none;border-top:1px dashed #999999;\" />"
         //        body+="<p style=\"font-size:12px;color:#999999\" align=\"center\" color＝\"#999999\"><span>原网页由 奇点资讯 转码以便移动设备阅读</span></p>"

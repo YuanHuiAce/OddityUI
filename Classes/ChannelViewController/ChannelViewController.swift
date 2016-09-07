@@ -8,7 +8,6 @@
 
 import UIKit
 import RealmSwift
-import OddityModal
 
 
 private extension Channel{
@@ -65,6 +64,9 @@ public class ChannelViewController: UIViewController {
         super.init(coder: aDecoder)
         
         self.transitioningDelegate = self
+        
+        self.modalPresentationCapturesStatusBarAppearance = false
+//        self.modalPresentationStyle = UIModalPresentationStyle.Custom
     }
     
     public override func viewDidLoad() {
@@ -295,22 +297,32 @@ extension ChannelViewController:UICollectionViewDelegateFlowLayout,UICollectionV
         
         cell.setChannel(channel)
         
+        cell.channelNameLabel.font = UIFont.a_font3_3
+        
+        
         return cell
+    }
+    
+    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    
+        let scSize = UIScreen.mainScreen().bounds
+        
+        return CGSize(width: (min(scSize.width, scSize.height)-18*2-12*2)/3, height: 35)
     }
     
     public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets{
     
-        return UIEdgeInsets(top: 26, left: 13, bottom: 26, right: 13)
+        return UIEdgeInsets(top: 26, left: 12, bottom: 26, right: 12)
     }
     
     public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
     
-        return 19
+        return 20
     }
     
     public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat{
     
-        return 20
+        return 18
     }
     
     

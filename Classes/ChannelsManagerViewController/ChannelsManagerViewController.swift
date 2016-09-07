@@ -9,7 +9,6 @@
 import UIKit
 import SnapKit
 import RealmSwift
-import OddityModal
 import XLPagerTabStrip
 
 public class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewController {
@@ -56,7 +55,6 @@ public class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCo
                 
                 return viewController
             }
-            
             
             self.reloadPagerTabStripView()
         }

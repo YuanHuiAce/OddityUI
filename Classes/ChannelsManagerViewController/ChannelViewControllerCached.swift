@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 
 /// 属性字符串 缓存器
 class ChannelViewControllerCached {
@@ -47,8 +46,10 @@ class ChannelViewControllerCached {
             
             channelViewController.newsResults = New.allArray().filter("ishotnew = 1 AND isdelete = 0")
         }else{
-            channelViewController.newsResults = New.allArray().filter("channel = %@ AND isdelete = 0 ",channel.id)
+            
+            channelViewController.newsResults = New.allArray().filter("(ANY channelList.channel = %@ AND isdelete = 0 ) OR ( channel = %@ AND isidentification = 1 )",channel.id,channel.id)
         }
+        
         self.cache.setObject(channelViewController, forKey: channel.cname)
         
         return channelViewController

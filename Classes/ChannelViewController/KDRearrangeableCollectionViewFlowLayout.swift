@@ -175,6 +175,8 @@ class KDRearrangeableCollectionViewFlowLayout: UICollectionViewFlowLayout, UIGes
                         
                         cell.channelStateImageView.hidden = true
                         
+                        cell.clipsToBounds = true
+                        
                         UIGraphicsBeginImageContextWithOptions(cell.bounds.size, cell.opaque, 0)
                         cell.layer.renderInContext(UIGraphicsGetCurrentContext()!)
                         let img = UIGraphicsGetImageFromCurrentImageContext()
@@ -288,10 +290,7 @@ class KDRearrangeableCollectionViewFlowLayout: UICollectionViewFlowLayout, UIGes
                 self.collectionView!.scrollRectToVisible(nextPageRect, animated: true)
                 
             }
-            
         }
-        
-      
     }
     
     func handleGesture(gesture: UILongPressGestureRecognizer) -> Void {
@@ -304,15 +303,26 @@ class KDRearrangeableCollectionViewFlowLayout: UICollectionViewFlowLayout, UIGes
         
         func endDraggingAction(bundle: Bundle) {
             
-            bundle.sourceCell.channelStateImageView.hidden = false
-            bundle.sourceCell.hidden = false
-            
             if let begin = self.delegate.ChannelManagerEndDraggind{
                 
                 begin() // 开始拖拽
             }
             
-            bundle.representationImageView.removeFromSuperview()
+            let frame = bundle.sourceCell.convertRect(bundle.sourceCell.bounds, toView: self.collectionView?.superview)
+            
+            UIView.animateWithDuration(0.3, animations: { 
+                
+                bundle.representationImageView.frame = frame
+                
+                }) { (_) in
+                    
+                    bundle.representationImageView.removeFromSuperview()
+                    bundle.sourceCell.clipsToBounds = false
+                    bundle.sourceCell.channelStateImageView.hidden = false
+                    bundle.sourceCell.hidden = false
+            }
+            
+            
             
             // if we have a proper data source then we can reload and have the data displayed correctly
 //            if let cv = self.collectionView where cv.delegate is KDRearrangeableCollectionViewDelegate {

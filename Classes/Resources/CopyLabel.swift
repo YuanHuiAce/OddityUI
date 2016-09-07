@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// 长按 UILabel 复制文字
 class CopyLabel: UILabel {
     
     var menu:UIMenuController!

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 import RealmSwift
 import PINRemoteImage
 

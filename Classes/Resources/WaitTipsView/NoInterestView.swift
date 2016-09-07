@@ -26,7 +26,7 @@ class NoInterestView: UIView {
         
         imageView.snp_makeConstraints { (make) in
             
-            make.centerY.equalTo(self.snp_centerY)
+            make.centerY.equalTo(self.snp_centerY).offset(-30)
             make.leftMargin.equalTo(20)
         }
         

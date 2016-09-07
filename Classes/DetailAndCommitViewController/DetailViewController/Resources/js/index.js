@@ -16,16 +16,7 @@ $(function() {
         });
     });
 
-    $("img").each(function(index, img) {
-
-        var width = $(this).attr("w");
-        if (width > windowWidth) {
-            width = windowWidth
-        }
-        $(this).height(width * $(this).attr("h") / $(this).attr("w"))
-        $(this).width(width)
-        $(this).css("background-color", "#f6f6f6");
-    })
+    fixedImageHeightAndWidth()
 
     $("#video iframe").width($(window).width() - 40);
     $("#video iframe").height($("#video iframe").width() * 3 / 5);
@@ -33,6 +24,21 @@ $(function() {
 });
 
 var ajaxUrl = []
+
+
+function fixedImageHeightAndWidth(){
+
+    $("img").each(function(index, img) {
+                  
+                  var width = $(this).attr("w");
+                  if (width > windowWidth) {
+                  width = windowWidth
+                  }
+                  $(this).height(width * $(this).attr("h") / $(this).attr("w"))
+                  $(this).width(width)
+                  $(this).css("background-color", "#f6f6f6");
+                  })
+}
 
 function scrollMethod(offesty) {
 

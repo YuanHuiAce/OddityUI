@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import OddityModal
 import WebKit
 import MJRefresh
 import RealmSwift
@@ -110,6 +109,8 @@ extension DetailViewController:IndicatorInfoProvider{
     override public func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         
         coordinator.animateAlongsideTransition({ (_) in
+            
+            self.webView.evaluateJavaScript("fixedImageHeightAndWidth()", completionHandler: nil)
             
             self.tableView.reloadData()
             

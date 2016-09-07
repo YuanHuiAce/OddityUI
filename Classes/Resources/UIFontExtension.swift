@@ -10,10 +10,10 @@ import UIKit
 
 let FONTMODALSTYLEIDENTIFITER = "FontModalStyle"
 
-extension UIFont{
+public extension UIFont{
 
     ///-1 为小字体 0 为普通字体 1 为大字体 2 超大字体
-    class var a_fontModalStyle:Float{
+    public class var a_fontModalStyle:Float{
         get {return NSUserDefaults.standardUserDefaults().floatForKey(FONTMODALSTYLEIDENTIFITER)}
         set(new){
             NSUserDefaults.standardUserDefaults().setFloat(new, forKey: FONTMODALSTYLEIDENTIFITER)
@@ -21,7 +21,7 @@ extension UIFont{
         }
     }
     
-    class var a_font1:UIFont{
+    internal class var a_font1:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -36,7 +36,7 @@ extension UIFont{
         }
     }
     
-    class var a_font2:UIFont{
+    internal class var a_font2:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -51,7 +51,7 @@ extension UIFont{
         }
     }
     
-    class var a_font3:UIFont{
+    internal class var a_font3:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -66,7 +66,7 @@ extension UIFont{
         }
     }
     
-    class var a_font3_1:UIFont{
+    internal class var a_font3_1:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -81,7 +81,22 @@ extension UIFont{
         }
     }
     
-    class var a_font3_2:UIFont{
+    internal class var a_font3_3:UIFont{
+        get{
+            switch self.a_fontModalStyle {
+            case 0:
+                return UIFont.systemFontOfSize(17)
+            case 1:
+                return UIFont.systemFontOfSize(18)
+            case 2:
+                return UIFont.systemFontOfSize(19)
+            default:
+                return UIFont.systemFontOfSize(16)
+            }
+        }
+    }
+    
+    internal class var a_font3_2:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -96,7 +111,7 @@ extension UIFont{
         }
     }
     
-    class var a_font4:UIFont{
+    internal class var a_font4:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -111,7 +126,7 @@ extension UIFont{
         }
     }
     
-    class var a_font5:UIFont{
+    internal class var a_font5:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -125,7 +140,8 @@ extension UIFont{
             }
         }
     }
-    class var a_font6:UIFont{
+    
+    internal class var a_font6:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -139,7 +155,8 @@ extension UIFont{
             }
         }
     }
-    class var a_font7:UIFont{
+    
+    internal class var a_font7:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -155,7 +172,7 @@ extension UIFont{
     }
     
     /// 相关新闻年份
-    class var a_font8:UIFont{
+    internal class var a_font8:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
@@ -171,7 +188,7 @@ extension UIFont{
     }
     
     /// 新闻标题
-    class var a_font9:UIFont{
+    internal class var a_font9:UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
