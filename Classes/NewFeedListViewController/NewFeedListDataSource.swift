@@ -7,37 +7,69 @@
 //
 
 import UIKit
+import PINCache
 
-extension NewFeedListViewController:UITableViewDataSource{
+
+/// 属性字符串 缓存器
+class TableViewHeightCached {
     
-    /**
-     设置新闻的个数
-     
-     判断当前视图没有newResults对象，如果没有 默认返回0
-     有则正常返回其数目
-     
-     - parameter tableView: 表格对象
-     - parameter section:   section index
-     
-     - returns: 新闻的个数
-     */
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return newsResults.count
+    lazy var cache = PINMemoryCache()
+    
+    class var sharedHeightCached:TableViewHeightCached!{
+        get{
+            struct backTaskLeton{
+                static var predicate:dispatch_once_t = 0
+                static var instance:TableViewHeightCached? = nil
+            }
+            dispatch_once(&backTaskLeton.predicate, { () -> Void in
+                backTaskLeton.instance = TableViewHeightCached()
+            })
+            return backTaskLeton.instance
+        }
+    }
+    
+    func cacheHeight(nid : Int,height:CGFloat){
+    
+        self.cache.setObject(height, forKey: "\(nid)")
     }
     
     /**
-     返回每一个新闻的展示
-     其中当遇到 这个新闻的 `isidentification` 的标示为 1 的时候，说明这条新闻是用来显示一个刷新视图的。
-     其它的新闻会根据起 style 参数进行 没有图 一张图 两张图 三张图的 新闻展示形式进行不同形式的展示
+     根据提供的 title 字符串 （title 针对于频道时唯一的，可以当作唯一标识来使用）在缓存中获取UIViewController
      
-     - parameter tableView: 表格对象
-     - parameter indexPath: 当前新闻展示的位置
+     - parameter string: 原本 字符串
+     - parameter font:   字体 对象 默认为 系统2号字体
      
-     - returns: 返回新闻的具体战士杨视图
+     - returns: 返回属性字符串
      */
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func heightForNewNID(nid : Int ) -> CGFloat {
         
+//        if let channelViewController = self.cache.objectForKey(nid) as? CG { return channelViewController }
+//        
+//        let channelViewController = getDisplayViewController(channel.cname)
+//        
+//        channelViewController.channel = channel
+//        
+//        if channel.id == 1{
+//            
+//            channelViewController.newsResults = New.allArray().filter("ishotnew = 1 AND isdelete = 0")
+//        }else{
+//            
+//            channelViewController.newsResults = New.allArray().filter("(ANY channelList.channel = %@ AND isdelete = 0 ) OR ( channel = %@ AND isidentification = 1 )",channel.id,channel.id)
+//        }
+//        
+//        self.cache.setObject(channelViewController, forKey: channel.cname)
+        
+        return self.cache.objectForKey("\(nid)") as? CGFloat ?? -1
+    }
+}
+
+
+
+extension NewFeedListViewController:UITableViewDataSource{
+    
+    
+    private func getTableViewCell(indexPath : NSIndexPath) -> UITableViewCell{
+    
         var cell :NewBaseTableViewCell!
         
         let new = newsResults[indexPath.row]
@@ -98,6 +130,39 @@ extension NewFeedListViewController:UITableViewDataSource{
         }
         
         return cell
+    }
+    
+    
+    
+    /**
+     设置新闻的个数
+     
+     判断当前视图没有newResults对象，如果没有 默认返回0
+     有则正常返回其数目
+     
+     - parameter tableView: 表格对象
+     - parameter section:   section index
+     
+     - returns: 新闻的个数
+     */
+    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return newsResults.count
+    }
+    
+    /**
+     返回每一个新闻的展示
+     其中当遇到 这个新闻的 `isidentification` 的标示为 1 的时候，说明这条新闻是用来显示一个刷新视图的。
+     其它的新闻会根据起 style 参数进行 没有图 一张图 两张图 三张图的 新闻展示形式进行不同形式的展示
+     
+     - parameter tableView: 表格对象
+     - parameter indexPath: 当前新闻展示的位置
+     
+     - returns: 返回新闻的具体战士杨视图
+     */
+    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+
+        return self.getTableViewCell(indexPath)
     }
     
     /**
@@ -162,7 +227,7 @@ extension NewFeedListViewController:UITableViewDataSource{
 
 
 extension NewFeedListViewController:UITableViewDelegate{
-    
+
     /**
      点击cell 之后处理的方法
      如果是刷新的cell就进行当前新闻的刷新
@@ -174,12 +239,7 @@ extension NewFeedListViewController:UITableViewDelegate{
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let new = newsResults[indexPath.row]
-        
-        if new.isread == 0 {
-            
-            new.isRead() // 设置为已读
-        }
-        
+
         if new.isidentification == 1 {
             
             return self.tableView.mj_header.beginRefreshing()
@@ -187,7 +247,12 @@ extension NewFeedListViewController:UITableViewDelegate{
         
         let viewController = OddityViewControllerManager.shareManager.getDetailAndCommitViewController(new)
         
-        
         self.showViewController(viewController, sender: nil)
+        
+        if new.isread == 0 {
+            
+            new.isRead() // 设置为已读
+        }
+        
     }
 }

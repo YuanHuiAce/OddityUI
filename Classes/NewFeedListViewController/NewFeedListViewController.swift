@@ -107,8 +107,6 @@ extension NewContent{
                 
                 var str = "<div class = \"imgDiv\">&img&</div>"
                 
-                //                var
-                
                 let res = img.grep("_(\\d+)X(\\d+).").captures
                 
                 if img.hasSuffix(".gif") {
@@ -121,7 +119,6 @@ extension NewContent{
                     if img.hasSuffix(".gif") {
                         
                         str = str.replaceRegex("(&span&)",  with: "<div style=\"height:2px;width:\(res[1])px\" class=\"progress img-responsive center-block customProgress\"><div class=\"progress-bar customProgressBar\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 0%;\"> <span class=\"sr-only\">40% 完成</span> </div> </div>")
-                        
                     }
                     
                     str = str.replaceRegex("(&img&)", with: "<img style=\"display: flex; \" data-src=\"\(img)\" w=\(res[1]) h=\(res[2]) class=\"img-responsive center-block\">")
@@ -148,10 +145,6 @@ extension NewContent{
                 body += "<p>\(txt)</p>"
             }
         }
-        
-        //        body+="<br/><hr style=\"height:1.5px;border:none;border-top:1px dashed #999999;\" />"
-        //        body+="<p style=\"font-size:12px;color:#999999\" align=\"center\" color＝\"#999999\"><span>原网页由 奇点资讯 转码以便移动设备阅读</span></p>"
-        //        body+="<p style=\"font-size:12px;\" align=\"center\"><span><a style=\"color:#999999;text-decoration:underline\" href =\"\(self.purl)\">查看原文</a></span></p>"
         
         let templatePath = NSBundle.OddityBundle().pathForResource("content_template", ofType: "html")
         
@@ -189,8 +182,6 @@ public class NewFeedListViewController: UIViewController,IndicatorInfoProvider,W
         return info
     }
     
-    
-    
     public override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -201,7 +192,7 @@ public class NewFeedListViewController: UIViewController,IndicatorInfoProvider,W
         
         self.HandleNewFeedMakeChange()
         
-        tableView.estimatedRowHeight = 68.0
+        tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableViewAutomaticDimension
         
         self.tableView.mj_header = NewRefreshHeaderView(refreshingBlock: {

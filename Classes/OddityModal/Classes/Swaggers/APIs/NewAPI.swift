@@ -81,9 +81,12 @@ public extension NewAPI{
                     
                     for channel in datas {
                         
-                        realm.create(New.self, value: channel, update: true)
+                        if let nid = channel.objectForKey("nid") as? Int where realm.objectForPrimaryKey(New.self, key: nid) == nil {
                         
-                        self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
+                            realm.create(New.self, value: channel, update: true)
+                            
+                            self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
+                        }
                     }
                 })
             }

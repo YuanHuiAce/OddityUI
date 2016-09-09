@@ -107,8 +107,6 @@ class NewBaseTableViewCell: UITableViewCell {
         self.Taglabel.paddingLeft = 2
         self.Taglabel.paddingRight = 2
         self.Taglabel.font = UIFont.a_font7
-        self.Taglabel.layer.borderWidth = 0.5
-        self.Taglabel.layer.cornerRadius = 2
         self.Taglabel.textAlignment = .Center
         
         self.addSubview(JiaPublabel)
@@ -116,6 +114,9 @@ class NewBaseTableViewCell: UITableViewCell {
     }
     
     func setPPPLabel(new:New){
+        
+        self.Taglabel.layer.borderWidth = 0.5
+        self.Taglabel.layer.cornerRadius = 2
         
         self.Taglabel.font = UIFont.a_font7
         self.JiaPublabel.font = UIFont.a_font7
@@ -168,6 +169,8 @@ class NewBaseTableViewCell: UITableViewCell {
     }
     
     override func drawRect(rect: CGRect) {
+
+        super.drawRect(rect)
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
         CGContextSetFillColorWithColor(context, UIColor.whiteColor().CGColor)
@@ -205,9 +208,7 @@ class NewOneTableViewCell: NewBaseTableViewCell {
     override func setNewObject(new:New,bigImg:Int = -1){
         
         super.setNewObject(new)
-        
-        self.imageView1.pin_updateWithProgress = true
-        
+
         if let url = NSURL(string: new.imgsList[0].value) {
             
             imageView1.pin_setImageFromURL(url.proPic() ?? url, placeholderImage: UIImage.sharePlaceholderImage)
@@ -253,9 +254,9 @@ class NewTwoTableViewCell: NewBaseTableViewCell {
         
         
         self.imageView6.hidden = true
-        self.imageView1.pin_updateWithProgress = true
-        self.imageView2.pin_updateWithProgress = true
-        
+//        self.imageView1.pin_updateWithProgress = true
+//        self.imageView2.pin_updateWithProgress = true
+//        
         if let url = NSURL(string: new.imgsList[0].value) {
             
             imageView1.pin_setImageFromURL(url.proPic() ?? url, placeholderImage: UIImage.sharePlaceholderImage)
@@ -292,10 +293,10 @@ class NewThreeTableViewCell: NewBaseTableViewCell {
         
         super.setNewObject(new)
         
-        self.imageView1.pin_updateWithProgress = true
-        self.imageView2.pin_updateWithProgress = true
-        self.imageView3.pin_updateWithProgress = true
-        
+//        self.imageView1.pin_updateWithProgress = true
+//        self.imageView2.pin_updateWithProgress = true
+//        self.imageView3.pin_updateWithProgress = true
+//        
         if let url = NSURL(string: new.imgsList[0].value) {
             
             imageView1.pin_setImageFromURL(url.proPic() ?? url, placeholderImage: UIImage.sharePlaceholderImage)

@@ -43,20 +43,52 @@ class ChannelReusableView: UICollectionReusableView {
     
     @IBOutlet var descLabel:UILabel!
     
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    var topBorder = UIView()
+    var bottomBorder = UIView()
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
         
-        let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
-        CGContextFillRect(context, rect)
-        //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5));
+        topBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
+        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
         
-        //上分割线
-        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, -0.5, rect.width, 0.5));
+        self.addSubview(topBorder)
+        self.addSubview(bottomBorder)
+        
+        self.backgroundColor = UIColor.clearColor()
+        
+        topBorder.snp_makeConstraints { (make) in
+            
+            make.top.equalTo(0)
+            make.right.equalTo(0)
+            make.left.equalTo(0)
+            make.height.equalTo(0.3)
+        }
+        
+        bottomBorder.snp_makeConstraints { (make) in
+            
+            make.bottom.equalTo(0)
+            make.right.equalTo(0)
+            make.left.equalTo(0)
+            make.height.equalTo(0.3)
+        }
     }
+    
+    
+//    override func drawRect(rect: CGRect) {
+//        super.drawRect(rect)
+//        
+//        let context = UIGraphicsGetCurrentContext() // 获取绘画板
+//        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
+//        CGContextFillRect(context, rect)
+//        //下分割线
+//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
+//        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5));
+//        
+//        //上分割线
+//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
+//        CGContextStrokeRect(context, CGRectMake(0, -0.5, rect.width, 0.5));
+//    }
 }
 
 
@@ -75,18 +107,40 @@ class bottomBorder: UIView {
 }
 
 class topAndBottomBorder: UIView {
+
+    var bottomBorder = UIView()
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
+        
+        self.addSubview(bottomBorder)
+
+        self.backgroundColor = UIColor.clearColor()
+
+        bottomBorder.snp_makeConstraints { (make) in
+            
+            make.bottom.equalTo(0)
+            make.right.equalTo(0)
+            make.left.equalTo(0)
+            make.height.equalTo(0.3)
+        }
+    }
     
     override func drawRect(rect: CGRect) {
         super.drawRect(rect)
         
-        let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
-        CGContextFillRect(context, rect)
-        //上分割线
-        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, -0.5, rect.width, 0.5));
-        //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5))
+        
+        
+//        let context = UIGraphicsGetCurrentContext() // 获取绘画板
+//        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
+//        CGContextFillRect(context, rect)
+//        //上分割线
+//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
+//        CGContextStrokeRect(context, CGRectMake(0, -0.5, rect.width, 0.5));
+//        //下分割线
+//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
+//        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5))
     }
 }
