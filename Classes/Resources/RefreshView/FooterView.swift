@@ -36,21 +36,21 @@ class NewRefreshFooterView: MJRefreshAutoFooter {
         
         let label = UILabel()
         label.textColor = UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1)
-        label.font = UIFont.boldSystemFontOfSize(14)
-        label.textAlignment = .Center
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.textAlignment = .center
         view.addSubview(label)
         self.label = label
         
         let imageView = UIImageView(image: UIImage.OddityImageByName("加载更多"))
-        imageView.contentMode = .ScaleAspectFit
+        imageView.contentMode = .scaleAspectFit
         view.addSubview(imageView)
         self.imageView = imageView
         
         let animation = CABasicAnimation(keyPath: "transform")
         animation.repeatCount = FLT_MAX
         animation.duration = 0.2
-        animation.cumulative = true
-        animation.toValue = NSValue(CATransform3D: CATransform3DMakeRotation(CGFloat(M_PI/2), 0, 0, 1))
+        animation.isCumulative = true
+        animation.toValue = NSValue(caTransform3D: CATransform3DMakeRotation(CGFloat(M_PI/2), 0, 0, 1))
         self.animation = animation
         
         self.view = view
@@ -90,19 +90,19 @@ class NewRefreshFooterView: MJRefreshAutoFooter {
         didSet{
             
             switch state {
-            case .Idle:
+            case .idle:
                 self.label.text = ""
-                self.imageView.hidden = true
-            case .Refreshing:
+                self.imageView.isHidden = true
+            case .refreshing:
                 self.label.text = "正在载入"
-                self.imageView.hidden = false
-                self.label.frame = CGRect(x: CGRectGetMaxX(self.imageView.frame)+10, y: 0, width: labelWidth, height: loadMoreHeight)
-                self.imageView.layer.addAnimation(self.animation, forKey: loadMoreAnimationKey)
-            case .NoMoreData:
+                self.imageView.isHidden = false
+                self.label.frame = CGRect(x: self.imageView.frame.maxX+10, y: 0, width: labelWidth, height: loadMoreHeight)
+                self.imageView.layer.add(self.animation, forKey: loadMoreAnimationKey)
+            case .noMoreData:
                 self.label.text = "已显示全部内容"
-                self.imageView.hidden = true
-                self.label.frame = CGRect(x: CGRectGetMaxX(self.imageView.frame), y: 0, width: labelWidth, height: loadMoreHeight)
-                self.imageView.layer.removeAnimationForKey(loadMoreAnimationKey)
+                self.imageView.isHidden = true
+                self.label.frame = CGRect(x: self.imageView.frame.maxX, y: 0, width: labelWidth, height: loadMoreHeight)
+                self.imageView.layer.removeAnimation(forKey: loadMoreAnimationKey)
             default:
                 break
             }

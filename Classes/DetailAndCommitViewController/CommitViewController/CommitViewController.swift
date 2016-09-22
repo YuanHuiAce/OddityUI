@@ -10,7 +10,13 @@ import UIKit
 import RealmSwift
 import XLPagerTabStrip
 
-public class CommitViewController: UIViewController,IndicatorInfoProvider {
+open class CommitViewController: UIViewController,IndicatorInfoProvider {
+    public func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        let info = IndicatorInfo(title: "评论")
+        
+        return info
+    }
+
     
     var new:New?
     
@@ -25,12 +31,5 @@ public class CommitViewController: UIViewController,IndicatorInfoProvider {
     @IBOutlet var tableView: UITableView!
     
     @IBOutlet var tableViewHeaderView: UIView!
-    
-    public func indicatorInfoForPagerTabStrip(pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
-        
-        let info = IndicatorInfo(title: "评论")
-        
-        return info
-    }
 
 }

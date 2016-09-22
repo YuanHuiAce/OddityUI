@@ -8,38 +8,38 @@
 import Foundation
 
 
-public class AboutnewsData: JSONEncodable {
+open class AboutnewsData: JSONEncodable {
     /** 新闻地址 */
-    public var url: String?
+    open var url: String?
     /** 新闻标题 */
-    public var title: String?
+    open var title: String?
     /** 新闻来源 */
-    public var from: String?
+    open var from: String?
     /** 赞数 */
-    public var rank: Int32?
+    open var rank: Int32?
     /** 创建时间 */
-    public var ptime: String?
+    open var ptime: String?
     /** 来源地址 */
-    public var pname: String?
+    open var pname: String?
     /** 图片地址 */
-    public var img: String?
+    open var img: String?
     /** 描述 */
-    public var abs: String?
+    open var abs: String?
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["url"] = self.url
-        nillableDictionary["title"] = self.title
-        nillableDictionary["from"] = self.from
+        nillableDictionary["url"] = self.url as AnyObject??
+        nillableDictionary["title"] = self.title as AnyObject??
+        nillableDictionary["from"] = self.from as AnyObject??
         nillableDictionary["rank"] = self.rank?.encodeToJSON()
-        nillableDictionary["ptime"] = self.ptime
-        nillableDictionary["pname"] = self.pname
-        nillableDictionary["img"] = self.img
-        nillableDictionary["abs"] = self.abs
+        nillableDictionary["ptime"] = self.ptime as AnyObject??
+        nillableDictionary["pname"] = self.pname as AnyObject??
+        nillableDictionary["img"] = self.img as AnyObject??
+        nillableDictionary["abs"] = self.abs as AnyObject??
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

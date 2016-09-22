@@ -14,10 +14,10 @@ import XLPagerTabStrip
 let CLICKTOCOMMENTVIEWCONTROLLER = "CLICKTOCOMMENTVIEWCONTROLLER" // 用户点击想要去评论视图
 
 @objc protocol PreViewControllerDelegate {
-    optional func NoCollectionAction(new:New) // 开始
+    @objc optional func NoCollectionAction(_ new:New) // 开始
 }
 
-public class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,UINavigationControllerDelegate,UIViewControllerTransitioningDelegate,WaitLoadProtcol{
+open class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,UINavigationControllerDelegate,UIViewControllerTransitioningDelegate,WaitLoadProtcol{
 
     var predelegate: PreViewControllerDelegate!
     
@@ -41,8 +41,8 @@ public class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,
     @IBOutlet var CommentButtonBackView:UIView!
     @IBOutlet var CommentButtonLeftSpace: NSLayoutConstraint!
     
-    private var commitViewController:CommitViewController!
-    private var detailViewController:DetailViewController!
+    fileprivate var commitViewController:CommitViewController!
+    fileprivate var detailViewController:DetailViewController!
     
 //    var normalResults:Results<Comment>!
     
@@ -53,23 +53,23 @@ public class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,
         self.transitioningDelegate = self
     }
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         
         super.viewDidLoad()
         
         self.containerView.bounces = false
-        self.buttonBarView.hidden = true
+        self.buttonBarView.isHidden = true
         self.titleLabel.text = self.title
         
         self.containerView.panGestureRecognizer.addTarget(self, action: #selector(DetailAndCommitViewController.pan(_:))) // 添加一个视图
         
-        if let n = new { // 刷新最热评论 和 普通评论
-            CommentUtil.LoadNoramlCommentsList(n)
-            AboutUtil.getAboutListArrayData(n)
-        }
+//        if let n = new { // 刷新最热评论 和 普通评论
+//            CommentUtil.LoadNoramlCommentsList(n)
+//            AboutUtil.getAboutListArrayData(n)
+//        }
         
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DetailAndCommitViewController.getToCommitViewControllerNotification(_:)), name: CLICKTOCOMMENTVIEWCONTROLLER, object: nil) // 当评论页面的查看更多的评论的按钮被评论的消息机制
+        NotificationCenter.default.addObserver(self, selector: #selector(DetailAndCommitViewController.getToCommitViewControllerNotification(_:)), name: NSNotification.Name(rawValue: CLICKTOCOMMENTVIEWCONTROLLER), object: nil) // 当评论页面的查看更多的评论的按钮被评论的消息机制
         /**
          *  用户点击 滑动到顶端视图
          */
@@ -77,23 +77,22 @@ public class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,
             
             if self.currentIndex == 0 {
             
-                self.detailViewController.tableView.setContentOffset(CGPointZero, animated: true)
+                self.detailViewController.tableView.setContentOffset(CGPoint.zero, animated: true)
             }
            
             if self.currentIndex == 1 {
                 
-                self.commitViewController.tableView.setContentOffset(CGPointZero, animated: true)
+                self.commitViewController.tableView.setContentOffset(CGPoint.zero, animated: true)
             }
         }))
     }
     
     // 获取到了评论视图的请求了
-    func getToCommitViewControllerNotification(notification:NSNotification){
-        self.moveToViewControllerAtIndex(1, animated: true)
+    func getToCommitViewControllerNotification(_ notification:Foundation.Notification){
+        self.moveToViewController(at: 1, animated: true)
     }
     
-    override public func viewControllersForPagerTabStrip(pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
-        
+    open override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
         detailViewController = OddityViewControllerManager.shareManager.getDetailViewController(new) // 获得详情视图
         commitViewController = OddityViewControllerManager.shareManager.getCommitViewController(new) // 获取评论视图
         
@@ -111,8 +110,7 @@ public class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,
      - parameter progressPercentage:          在这段路程中的 progress
      - parameter indexWasChanged:             是否 Index 已经发生了变化
      */
-    override public func pagerTabStripViewController(pagerTabStripViewController: PagerTabStripViewController, updateIndicatorFromIndex fromIndex: Int, toIndex: Int, withProgressPercentage progressPercentage: CGFloat, indexWasChanged: Bool) {
-        
+    open override func updateIndicator(for viewController: PagerTabStripViewController, fromIndex: Int, toIndex: Int, withProgressPercentage progressPercentage: CGFloat, indexWasChanged: Bool) {
         if fromIndex == toIndex {
             
             self.setCButton()
@@ -141,9 +139,9 @@ extension DetailAndCommitViewController{
      
      - parameter sender: <#sender description#>
      */
-    @IBAction func touchCommentButton(sender: AnyObject) {
+    @IBAction func touchCommentButton(_ sender: AnyObject) {
         
-        self.moveToViewControllerAtIndex(1, animated: true)
+        self.moveToViewController(at: 1, animated: true)
         
         self.ButtonMethod()
     }
@@ -153,9 +151,9 @@ extension DetailAndCommitViewController{
      
      - parameter sender: <#sender description#>
      */
-    @IBAction func touchPostButton(sender: AnyObject) {
+    @IBAction func touchPostButton(_ sender: AnyObject) {
         
-        self.moveToViewControllerAtIndex(0, animated: true)
+        self.moveToViewController(at: 0, animated: true)
         
         self.ButtonMethod()
     }
@@ -165,7 +163,7 @@ extension DetailAndCommitViewController{
      
      根据不同的CurrentIndex 设置 按钮的位置，进行相对应的开发
      */
-    private func ButtonMethod(){
+    fileprivate func ButtonMethod(){
         
         self.CommentButtonLeftSpace.constant = self.currentIndex == 0 ? 0 : -self.CommentButtonBackView.frame.width
         
@@ -178,14 +176,14 @@ extension DetailAndCommitViewController{
     func setCButton(){
         
         self.commentsLabel.clipsToBounds = true
-        self.commentsLabel.layer.borderColor = UIColor.whiteColor().CGColor
+        self.commentsLabel.layer.borderColor = UIColor.white.cgColor
         self.commentsLabel.layer.borderWidth = 1.5
         self.commentsLabel.layer.cornerRadius = 3
         self.commentsLabel.text = new == nil ? " 0 " : " \(new!.comment) "
-        self.commentsLabel.hidden = (new == nil || (new?.comment) ?? 0 == 0)
+        self.commentsLabel.isHidden = (new == nil || (new?.comment) ?? 0 == 0)
         
         let image = (new == nil || (new?.comment) ?? 0 == 0) ? UIImage.OddityImageByName("详情页未评论") : UIImage.OddityImageByName("详情页已评论")
         
-        self.CommentAndPostButton.setImage(image, forState: UIControlState.Normal)
+        self.CommentAndPostButton.setImage(image, for: UIControlState())
     }
 }

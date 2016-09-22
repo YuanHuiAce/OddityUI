@@ -13,21 +13,26 @@ class CopyLabel: UILabel {
     
     var menu:UIMenuController!
     
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         
         return true
     }
     
-    override func canPerformAction(action: Selector, withSender sender: AnyObject?) -> Bool {
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         
-        return action == #selector(NSObject.copy(_:))
+        return action == #selector(CopyLabel.copy(_:))
     }
 
-    override func copy(sender: AnyObject?) {
-        
-        let pboard = UIPasteboard.generalPasteboard()
+    override func copy(_ sender: Any?) {
+        let pboard = UIPasteboard.general
         pboard.string = self.text
     }
+    
+//    override func copy(_ sender: AnyObject?) {
+//        
+//        let pboard = UIPasteboard.general
+//        pboard.string = self.text
+//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,24 +44,24 @@ class CopyLabel: UILabel {
         self.attachTapHandler()
     }
     
-    private func attachTapHandler(){
+    fileprivate func attachTapHandler(){
     
         let tap = UILongPressGestureRecognizer { (recongnizer) in
             
-            if recongnizer.state != .Began {return}
+            if recongnizer.state != .began {return}
             
             self.becomeFirstResponder()
             
-            self.menu = UIMenuController.sharedMenuController()
-            self.menu.setTargetRect(self.frame, inView: self.superview!)
+            self.menu = UIMenuController.shared
+            self.menu.setTargetRect(self.frame, in: self.superview!)
             self.menu.setMenuVisible(true, animated: true)
             
-            self.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.4)
+            self.backgroundColor = UIColor.lightGray.withAlphaComponent(0.4)
         }
         
-        NSNotificationCenter.defaultCenter().addObserverForName(UIMenuControllerDidHideMenuNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (noti) in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIMenuControllerDidHideMenu, object: nil, queue: OperationQueue.main) { (noti) in
             
-            self.backgroundColor = UIColor.whiteColor()
+            self.backgroundColor = UIColor.white
         }
         
         self.addGestureRecognizer(tap)

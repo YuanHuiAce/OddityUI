@@ -8,17 +8,17 @@
 import Foundation
 
 
-public class VisitorsRegister: JSONEncodable {
+open class VisitorsRegister: JSONEncodable {
     /** 用户类型注释1.本地注册用户 2游客用户 3微博用户 4微信用户 */
-    public var utype: Int32?
+    open var utype: Int32?
     /** 用户平台注释 1.IOS 2安卓 3网页 4无法识别 */
-    public var platform: Int32?
+    open var platform: Int32?
     /** 用户注册时所在的省份 */
-    public var province: String?
+    open var province: String?
     /** 用户注册时所在的城市 */
-    public var city: String?
+    open var city: String?
     /** 用户注册时所在的市区 */
-    public var district: String?
+    open var district: String?
 
     public init() {}
 
@@ -27,10 +27,10 @@ public class VisitorsRegister: JSONEncodable {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["utype"] = self.utype?.encodeToJSON()
         nillableDictionary["platform"] = self.platform?.encodeToJSON()
-        nillableDictionary["province"] = self.province
-        nillableDictionary["city"] = self.city
-        nillableDictionary["district"] = self.district
+        nillableDictionary["province"] = self.province as AnyObject??
+        nillableDictionary["city"] = self.city as AnyObject??
+        nillableDictionary["district"] = self.district as AnyObject??
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

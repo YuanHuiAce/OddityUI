@@ -8,18 +8,18 @@
 
 import UIKit
 
-extension NSBundle {
+extension Bundle {
     
     /**
      获取 StoryBoard 的 Bundle 对象
      
      - returns: <#return value description#>
      */
-    class func OddityBundle() -> NSBundle{
+    class func OddityBundle() -> Bundle{
     
-        let podBundle = NSBundle(forClass: OddityViewControllerManager.classForCoder())
+        let podBundle = Bundle(for: OddityViewControllerManager.classForCoder())
         
-        if let bundleURL = podBundle.URLForResource("OdditBundle", withExtension: "bundle"),bundle = NSBundle(URL: bundleURL)  {
+        if let bundleURL = podBundle.url(forResource: "OdditBundle", withExtension: "bundle"),let bundle = Bundle(url: bundleURL)  {
             
             return bundle
         }
@@ -31,11 +31,11 @@ extension NSBundle {
 
 extension UIImage{
 
-    class func OddityImageByName(name:String) -> UIImage?{
+    class func OddityImageByName(_ name:String) -> UIImage?{
     
-        let bundle = NSBundle.OddityBundle()
+        let bundle = Bundle.OddityBundle()
         
-        return UIImage(named: name, inBundle: bundle, compatibleWithTraitCollection: nil)
+        return UIImage(named: name, in: bundle, compatibleWith: nil)
     }
 }
 

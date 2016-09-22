@@ -12,7 +12,7 @@ import RealmSwift
 
 extension CommitViewController{
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         
         super.viewDidLoad()
         
@@ -51,7 +51,7 @@ extension CommitViewController{
         self.tableView.contentInset.bottom = 44
         
         // 获得字体变化通知，完成刷新字体大小方法
-        NSNotificationCenter.defaultCenter().addObserverForName(FONTMODALSTYLEIDENTIFITER, object: nil, queue: NSOperationQueue.mainQueue()) { (_) in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: FONTMODALSTYLEIDENTIFITER), object: nil, queue: OperationQueue.main) { (_) in
             
             self.setHeaderView()
             self.tableView.reloadData()
@@ -60,21 +60,21 @@ extension CommitViewController{
     
     
     // 设置数据源对象
-    private func setResults(){
+    fileprivate func setResults(){
         
         if let new = new {
             
             let realm = try! Realm()
             
-            hotResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 1").sorted("commend", ascending: false)
-            normalResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 0").sorted("ctimes", ascending: false)
+            hotResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 1").sorted(byProperty: "commend", ascending: false)
+            normalResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 0").sorted(byProperty: "ctimes", ascending: false)
         }
         
         self.tableView.reloadData()
     }
     
     // 设置表头视图
-    private func setHeaderView(){
+    fileprivate func setHeaderView(){
         
         if let n  = new {
             
@@ -88,8 +88,8 @@ extension CommitViewController{
             tableViewHeaderView.layoutIfNeeded()
             
             let tsize = CGSize(width: self.view.frame.width-18-18, height: 1000) // 获得标题最宽的宽度
-            let titleHeight = NSString(string:self.newTitleLabel.text!).boundingRectWithSize(tsize, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:self.newTitleLabel.font], context: nil).height // 获得标题所需高度
-            let infoHeight = NSString(string:self.newInfoLabel.text!).boundingRectWithSize(tsize, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:self.newInfoLabel.font], context: nil).height // 获得info所需高度
+            let titleHeight = NSString(string:self.newTitleLabel.text!).boundingRect(with: tsize, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:self.newTitleLabel.font], context: nil).height // 获得标题所需高度
+            let infoHeight = NSString(string:self.newInfoLabel.text!).boundingRect(with: tsize, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:self.newInfoLabel.font], context: nil).height // 获得info所需高度
             
             tableViewHeaderView.frame.size.height = titleHeight+infoHeight+17+33+8
             
@@ -97,9 +97,9 @@ extension CommitViewController{
         }
     }
     
-    override public func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
-        coordinator.animateAlongsideTransition({ (_) in
+        coordinator.animate(alongsideTransition: { (_) in
             
             self.setHeaderView()
             

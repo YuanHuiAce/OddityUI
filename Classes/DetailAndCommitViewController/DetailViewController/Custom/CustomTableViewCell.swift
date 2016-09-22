@@ -7,10 +7,9 @@
 //
 
 import UIKit
-import AFDateHelper
 import PINRemoteImage
 
-extension NSDate{
+extension Date{
 
     
     /**
@@ -25,11 +24,11 @@ extension NSDate{
      */
     var weiboTimeDescription: String {
         
-        let canlender = NSCalendar.currentCalendar()
+        let canlender = Calendar.current
         // 当天
         if canlender.isDateInToday(self) {
             // 时间差
-            let delta = Int(NSDate().timeIntervalSinceDate(self))
+            let delta = Int(Date().timeIntervalSince(self))
             
             if delta < 60 {
                 return "刚刚"
@@ -49,18 +48,18 @@ extension NSDate{
             
             fmt = "MM-dd" + fmt
             // 判断两个日期之间是否有一个完整的`年度`差
-            let coms = canlender.components(.Year, fromDate: self, toDate: NSDate(), options: [])
+            let coms = (canlender as NSCalendar).components(.year, from: self, to: Date(), options: [])
             
             if coms.year != 0 {
                 fmt = "yyyy-" + fmt
             }
         }
         // 日期转换
-        let df = NSDateFormatter()
-        df.locale = NSLocale(localeIdentifier: "en")
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en")
         df.dateFormat = fmt
         
-        return df.stringFromDate(self)
+        return df.string(from: self)
     }
 }
 
@@ -77,9 +76,9 @@ class CommentsTableViewCell:UITableViewCell{
     
     var comment:Comment!
     var tableView:UITableView!
-    var indexPath:NSIndexPath!
+    var indexPath:IndexPath!
     
-    func setCommentMethod(comment:Comment,tableView:UITableView,indexPath:NSIndexPath){
+    func setCommentMethod(_ comment:Comment,tableView:UITableView,indexPath:IndexPath){
         
         self.comment = comment
         self.tableView = tableView
@@ -90,10 +89,10 @@ class CommentsTableViewCell:UITableViewCell{
         infoLabel.font = UIFont.a_font7
         contentLabel.font = UIFont.a_font3
         
-        praiseLabel.hidden = comment.commend <= 0
-        praiseButton.enabled = false
-        praiseedButton.enabled = false
-        praiseedButton.hidden = comment.upflag == 0 // 用户没有点赞隐藏
+        praiseLabel.isHidden = comment.commend <= 0
+        praiseButton.isEnabled = false
+        praiseedButton.isEnabled = false
+        praiseedButton.isHidden = comment.upflag == 0 // 用户没有点赞隐藏
         
         praiseLabel.text = "\(comment.commend)"
         
@@ -101,37 +100,37 @@ class CommentsTableViewCell:UITableViewCell{
         infoLabel.text = comment.ctimes.weiboTimeDescription
         cnameLabel.text = comment.uname
         
-        if let url = NSURL(string: comment.avatar) {
+        if let url = URL(string: comment.avatar) {
             
-            avatarView.pin_setImageFromURL(url, placeholderImage: UIImage.sharePlaceholderImage)
+            avatarView.pin_setImage(from: url, placeholderImage: UIImage.SharePlaceholderImage())
         }
     }
 
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         self.avatarView.clipsToBounds = true
         self.avatarView.layer.cornerRadius = self.avatarView.frame.height/2
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.whiteColor().CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(rect)
         //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).CGColor)
-        CGContextStrokeRect(context, CGRectMake(18, rect.height, rect.width - 36, 1));
+        context?.setStrokeColor(UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).cgColor)
+        context?.stroke(CGRect(x: 18, y: rect.height, width: rect.width - 36, height: 1));
     }
 }
 
 class SearchTableViewCell:UITableViewCell{
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.whiteColor().CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(rect)
         //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 1));
+        context?.setStrokeColor(UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).cgColor)
+        context?.stroke(CGRect(x: 0, y: rect.height, width: rect.width, height: 1));
     }
 }
 
@@ -143,20 +142,20 @@ class MoreTableViewCell:UITableViewCell{
 
 extension Comment {
     
-    func HeightByNewConstraint(tableView:UITableView) -> CGFloat{
+    func HeightByNewConstraint(_ tableView:UITableView) -> CGFloat{
         
         let width = tableView.frame.width
         
         // 计算平路内容所占高度
         let contentSize = CGSize(width: width-18-38-12-18, height: CGFloat(MAXFLOAT))
-        let contentHeight = NSString(string:self.content).boundingRectWithSize(contentSize, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font3], context: nil).height
+        let contentHeight = NSString(string:self.content).boundingRect(with: contentSize, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font3], context: nil).height
         
         // time
         let size = CGSize(width: 1000, height: 1000)
-        let commentHeight = NSString(string:self.ctimes.weiboTimeDescription).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
+        let commentHeight = NSString(string:self.ctimes.weiboTimeDescription).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
         
         // name
-        let nameHeight = NSString(string:self.uname).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font4], context: nil).height
+        let nameHeight = NSString(string:self.uname).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font4], context: nil).height
         
         return 21+21+nameHeight+commentHeight+contentHeight+12+8
     }
@@ -164,28 +163,28 @@ extension Comment {
 
 extension About {
     
-    func HeightByNewConstraint(tableView:UITableView,hiddenY:Bool) -> CGFloat{
+    func HeightByNewConstraint(_ tableView:UITableView,hiddenY:Bool) -> CGFloat{
         
         let width = tableView.frame.width
         
         var content:CGFloat = 60
         
-        if self.img?.characters.count <= 0  {
+        if (self.img?.characters.count)! <= 0  {
             
             let size = CGSize(width: width-17-17-7-7, height: 1000)
             
-            content = NSString(string:self.title).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font2], context: nil).height
+            content = NSString(string:self.title).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font2], context: nil).height
             
-            content += NSString(string:self.pname).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
+            content += NSString(string:self.pname).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
             
             content += 10
         }else{
             
             let size = CGSize(width: (width-34-14-81-15), height: 1000)
             
-            content = NSString(string:self.title).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font2], context: nil).height
+            content = NSString(string:self.title).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font2], context: nil).height
             
-            content += NSString(string:self.pname).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
+            content += NSString(string:self.pname).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.a_font7], context: nil).height
             
             content += 10
             
@@ -200,11 +199,11 @@ extension About {
 
 class circularView:UIView{
 
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
     
         self.layer.cornerRadius = rect.height/2
         self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).CGColor
+        self.layer.borderColor = UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).cgColor
         self.clipsToBounds = true
     }
 }
@@ -213,7 +212,7 @@ class circularView:UIView{
 
 extension String {
     
-    func toAttributedString(font:UIFont=UIFont.a_font2) -> NSAttributedString{
+    func toAttributedString(_ font:UIFont=UIFont.a_font2) -> NSAttributedString{
         
         return AttributedStringLoader.sharedLoader.imageForUrl(self)
     }
@@ -222,20 +221,9 @@ extension String {
 /// 属性字符串 缓存器
 class AttributedStringLoader {
     
-    lazy var cache = NSCache()
-    
-    class var sharedLoader:AttributedStringLoader!{
-        get{
-            struct backTaskLeton{
-                static var predicate:dispatch_once_t = 0
-                static var instance:AttributedStringLoader? = nil
-            }
-            dispatch_once(&backTaskLeton.predicate, { () -> Void in
-                backTaskLeton.instance = AttributedStringLoader()
-            })
-            return backTaskLeton.instance
-        }
-    }
+    static let sharedLoader:AttributedStringLoader = {return AttributedStringLoader()}()
+
+    var cache = NSCache<AnyObject,AnyObject>()
     
     /**
      根据提供的String 继而提供 属性字符串
@@ -245,15 +233,15 @@ class AttributedStringLoader {
      
      - returns: 返回属性字符串
      */
-    func imageForUrl(string : String,font:UIFont=UIFont.a_font2) -> NSAttributedString {
+    func imageForUrl(_ string : String,font:UIFont=UIFont.a_font2) -> NSAttributedString {
         
-        if let aString = self.cache.objectForKey(string) as? NSAttributedString { return aString }
+        if let aString = self.cache.object(forKey: string as AnyObject) as? NSAttributedString { return aString }
         
-        let attributed = try! NSMutableAttributedString(data: string.dataUsingEncoding(NSUnicodeStringEncoding)!, options: [NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType], documentAttributes: nil)
+        let attributed = try! NSMutableAttributedString(data: string.data(using: String.Encoding.unicode)!, options: [NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType], documentAttributes: nil)
         
         attributed.addAttributes([NSFontAttributeName:font], range: NSMakeRange(0, attributed.length))
         
-        self.cache.setObject(attributed, forKey: string)
+        self.cache.setObject(attributed, forKey: string as AnyObject)
         
         return attributed
     }
@@ -274,7 +262,7 @@ class AboutTableViewCell:UITableViewCell{
     var isHeader = false
     var hiddenYear = false
     
-    func setAboutMethod(about:About,hiddenY:Bool){
+    func setAboutMethod(_ about:About,hiddenY:Bool){
     
         self.hiddenYear = hiddenY
         
@@ -290,7 +278,7 @@ class AboutTableViewCell:UITableViewCell{
         YearLabel.clipsToBounds = true
         MAndDLabel.clipsToBounds = true
         
-        let fromStr = about.from.lowercaseString
+        let fromStr = about.from.lowercased()
         let yesabout = UIColor(red: 0, green: 145/255, blue: 250/255, alpha: 1)
         let noabout = UIColor(red: 170/255, green: 170/255, blue: 170/255, alpha: 1)
         
@@ -298,60 +286,58 @@ class AboutTableViewCell:UITableViewCell{
         
         pnameLabel.text = about.pname
         YearLabel.text = "\(about.ptimes.year())"
-        MAndDLabel.text = about.ptimes.toString(format: DateFormat.Custom(" MM/dd "))
+        MAndDLabel.text = about.ptimes.toString(DateFormat.custom(" MM/dd "))
         contentLabel.text = about.title
         self.contentLabel.textColor = about.isread == 1 ? UIColor.a_color4 : UIColor.a_color3
         
         self.titleHeadightConstraint.constant = hiddenY ? 0 : 21
         
-        if let im = about.img,let url = NSURL(string: im) {
+        if let im = about.img,let url = URL(string: im) {
             
             if im.characters.count <= 0 {
                 
                 cntentRightSpaceConstraint.constant = 17
-                descImageView.hidden = true
+                descImageView.isHidden = true
             }else{
                 
                 cntentRightSpaceConstraint.constant = 17+81+15
-                descImageView.hidden = false
-                descImageView.pin_setImageFromURL(url, placeholderImage: UIImage.sharePlaceholderImage)
+                descImageView.isHidden = false
+                descImageView.pin_setImage(from: url, placeholderImage: UIImage.SharePlaceholderImage())
             }
         }
         
         self.layoutIfNeeded()
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.whiteColor().CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(rect)
         //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).CGColor)
-        CGContextStrokeRect(context, CGRectMake(30, rect.height, rect.width - 17-17-7-6.5, 1));
+        context?.setStrokeColor(UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).cgColor)
+        context?.stroke(CGRect(x: 30, y: rect.height, width: rect.width - 17-17-7-6.5, height: 1));
         
-        CGContextMoveToPoint(context, 20, self.isHeader ? (hiddenYear ? 20+6 : 20)  : 0)       //移到線段的第一個點
-        CGContextAddLineToPoint(context, 20, rect.height)       //畫出一條線
-        CGContextSetLineDash(context, 0, [1,1], 2)    //設定虛線
-        CGContextSetLineWidth(context, 1)               //設定線段粗細
+        context?.move(to: CGPoint(x: 20, y: self.isHeader ? (hiddenYear ? 20+6 : 20)  : 0))       //移到線段的第一個點
+        context?.addLine(to: CGPoint(x: 20, y: rect.height))       //畫出一條線
+        context?.setLineDash(phase: 2, lengths: [1,1])
+//        CGContextSetLineDash(context, 0, [1,1], 2)    //設定虛線
+        context?.setLineWidth(1)               //設定線段粗細
         UIColor(red: 228/255, green: 228/255, blue: 228/255, alpha: 1).set()                        //設定線段顏色
-        CGContextStrokePath(context)                    //畫出線段
+        context?.strokePath()                    //畫出線段
     }
 }
 
 
 class LeftBorderView:UIView{
 
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(UIColor.clear.cgColor)
+        context?.fill(rect)
         //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, 10, 1, 47));                //畫出線段
+        context?.setStrokeColor(UIColor(red: 228/255, green:228/255, blue: 228/255, alpha: 1).cgColor)
+        context?.stroke(CGRect(x: 0, y: 10, width: 1, height: 47));                //畫出線段
     }
 }
-
-
-import SnapKit

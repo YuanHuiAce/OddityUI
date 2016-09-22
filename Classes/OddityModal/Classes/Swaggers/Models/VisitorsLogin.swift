@@ -8,11 +8,11 @@
 import Foundation
 
 
-public class VisitorsLogin: JSONEncodable {
+open class VisitorsLogin: JSONEncodable {
     /** 用户的ID */
-    public var uid: Int32?
+    open var uid: Int32?
     /** 用户登录密码 */
-    public var password: String?
+    open var password: String?
 
     public init() {}
 
@@ -20,8 +20,8 @@ public class VisitorsLogin: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["uid"] = self.uid?.encodeToJSON()
-        nillableDictionary["password"] = self.password
+        nillableDictionary["password"] = self.password as AnyObject??
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

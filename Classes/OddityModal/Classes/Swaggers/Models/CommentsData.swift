@@ -8,25 +8,25 @@
 import Foundation
 
 
-public class CommentsData: JSONEncodable {
+open class CommentsData: JSONEncodable {
     /** 评论ID */
-    public var id: Int32?
+    open var id: Int32?
     /** 评论正文 */
-    public var content: String?
+    open var content: String?
     /** 赞数 */
-    public var commend: Int32?
+    open var commend: Int32?
     /** 创建时间 */
-    public var ctime: String?
+    open var ctime: String?
     /** 创建该评论的用户ID */
-    public var uid: Int32?
+    open var uid: Int32?
     /** 创建该评论的用户名 */
-    public var uname: String?
+    open var uname: String?
     /** 评论头像 */
-    public var avatar: String?
+    open var avatar: String?
     /** 该评论对应的新闻 docid */
-    public var docid: String?
+    open var docid: String?
     /** 用户是否能对该条评论点赞，0、1 对应 可点、不可点 */
-    public var upflag: Int32?
+    open var upflag: Int32?
 
     public init() {}
 
@@ -34,15 +34,15 @@ public class CommentsData: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["id"] = self.id?.encodeToJSON()
-        nillableDictionary["content"] = self.content
+        nillableDictionary["content"] = self.content as AnyObject??
         nillableDictionary["commend"] = self.commend?.encodeToJSON()
-        nillableDictionary["ctime"] = self.ctime
+        nillableDictionary["ctime"] = self.ctime as AnyObject??
         nillableDictionary["uid"] = self.uid?.encodeToJSON()
-        nillableDictionary["uname"] = self.uname
-        nillableDictionary["avatar"] = self.avatar
-        nillableDictionary["docid"] = self.docid
+        nillableDictionary["uname"] = self.uname as AnyObject??
+        nillableDictionary["avatar"] = self.avatar as AnyObject??
+        nillableDictionary["docid"] = self.docid as AnyObject??
         nillableDictionary["upflag"] = self.upflag?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

@@ -35,17 +35,17 @@ import UIKit
 
 extension DetailAndCommitViewController{
 
-    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc(animationControllerForPresentedController:presentingController:sourceController:) public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         return PresentdAnimation
     }
     
-    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc(animationControllerForDismissedController:) public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         return DismissedAnimation
     }
     
-    public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    @objc(interactionControllerForDismissal:) public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         
         if self.DismissedAnimation.isInteraction {
             
@@ -57,30 +57,30 @@ extension DetailAndCommitViewController{
     
     
     // 切换全屏活着完成反悔上一个界面
-    @IBAction func touchViewController(sender: AnyObject) {
+    @IBAction func touchViewController(_ sender: AnyObject) {
 
-        if currentIndex == 1 { return self.moveToViewControllerAtIndex(0)}
+        if currentIndex == 1 { return self.moveToViewController(at: 0)}
         
-        return self.dismissViewControllerAnimated(true, completion: nil)
+        return self.dismiss(animated: true, completion: nil)
     }
     
     // 进行滑动返回上一界面的代码操作
-    func pan(pan:UIPanGestureRecognizer){
+    func pan(_ pan:UIPanGestureRecognizer){
 
         guard let view = pan.view as? UIScrollView else{return}
-        let point = pan.translationInView(view)
-        if pan.state == UIGestureRecognizerState.Began {
+        let point = pan.translation(in: view)
+        if pan.state == UIGestureRecognizerState.began {
             if view.contentOffset.x > 0 || point.x < 0 {return}
             
             self.DismissedAnimation.isInteraction = true
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
             
-        }else if pan.state == UIGestureRecognizerState.Changed {
+        }else if pan.state == UIGestureRecognizerState.changed {
             
-            let process = point.x/UIScreen.mainScreen().bounds.width
+            let process = point.x/UIScreen.main.bounds.width
             
-            self.InteractiveTransitioning.updateInteractiveTransition(process)
+            self.InteractiveTransitioning.update(process)
             
         }else {
             
@@ -88,15 +88,15 @@ extension DetailAndCommitViewController{
             
             let loctionX = abs(Int(point.x))
             
-            let velocityX = pan.velocityInView(pan.view).x
+            let velocityX = pan.velocity(in: pan.view).x
             
-            if velocityX >= 500 || loctionX >= Int(UIScreen.mainScreen().bounds.width/2) {
+            if velocityX >= 500 || loctionX >= Int(UIScreen.main.bounds.width/2) {
                 
-                self.InteractiveTransitioning.finishInteractiveTransition()
+                self.InteractiveTransitioning.finish()
                 
             }else{
                 
-                self.InteractiveTransitioning.cancelInteractiveTransition()
+                self.InteractiveTransitioning.cancel()
             }
         }
     }

@@ -12,9 +12,7 @@ Pod::Spec.new do |s|
 
   s.resource_bundles = { "OdditBundle" => "Classes/**/*.{xcassets,storyboard,html,js,css}" }
 
-  s.dependency 'AFDateHelper'
   s.dependency 'RealmSwift'
-  s.dependency 'Alamofire'
   s.dependency 'JMGTemplateEngine'
   s.dependency 'PINRemoteImage'
   s.dependency 'MJRefresh'

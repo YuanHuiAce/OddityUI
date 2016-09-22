@@ -19,19 +19,19 @@ class DetailBorderView:UIView{
 
 class ShareBottomBorderView: UIView {
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
-        super.drawRect(rect)
+        super.draw(rect)
         
         let layout = CAShapeLayer()
         let path = UIBezierPath()
-        path.moveToPoint(CGPoint(x: 18, y: self.frame.size.height))
-        path.addLineToPoint(CGPoint(x: self.frame.size.width-18, y: self.frame.size.height))
+        path.move(to: CGPoint(x: 18, y: self.frame.size.height))
+        path.addLine(to: CGPoint(x: self.frame.size.width-18, y: self.frame.size.height))
         
         path.lineWidth = 0.5
         UIColor.a_color5.setStroke()
         path.stroke()
         
-        layout.path = path.CGPath
+        layout.path = path.cgPath
     }
 }

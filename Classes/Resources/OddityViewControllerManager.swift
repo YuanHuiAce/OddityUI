@@ -8,24 +8,16 @@
 
 import UIKit
 
-public class OddityViewControllerManager: NSObject {
+open class OddityViewControllerManager: NSObject {
     
-    public var storyBoard:UIStoryboard!
+    open var storyBoard:UIStoryboard!
     
-    public class var shareManager:OddityViewControllerManager!{
-        get{
-            struct backTaskLeton{
-                static var predicate:dispatch_once_t = 0
-                static var bgTask:OddityViewControllerManager? = nil
-            }
-            
-            dispatch_once(&backTaskLeton.predicate, { () -> Void in
-                backTaskLeton.bgTask = OddityViewControllerManager()
-                backTaskLeton.bgTask!.storyBoard = UIStoryboard(name: "Oddity", bundle: NSBundle.OddityBundle())
-            })
-            return backTaskLeton.bgTask
-        }
-    }
+    static open let shareManager:OddityViewControllerManager = {
+        let shareManager = OddityViewControllerManager()
+        shareManager.storyBoard = UIStoryboard(name: "Oddity", bundle: Bundle.OddityBundle())
+        return shareManager
+    }()
+    
 }
 
 public extension OddityViewControllerManager{
@@ -35,19 +27,19 @@ public extension OddityViewControllerManager{
      
      - returns: 频道管理视图
      */
-    public func getsChannelsManagerViewController() -> ChannelsManagerViewController{ return self.storyBoard.instantiateViewControllerWithIdentifier("ChannelsManagerViewController") as! ChannelsManagerViewController }
+    public func getsChannelsManagerViewController() -> ChannelsManagerViewController{ return self.storyBoard.instantiateViewController(withIdentifier: "ChannelsManagerViewController") as! ChannelsManagerViewController }
     /**
      获得频道列表视图
      
      - returns: 频道管理视图
      */
-    public func getsNewFeedListViewController() -> NewFeedListViewController{ return self.storyBoard.instantiateViewControllerWithIdentifier("NewFeedListViewController") as! NewFeedListViewController }
+    public func getsNewFeedListViewController() -> NewFeedListViewController{ return self.storyBoard.instantiateViewController(withIdentifier: "NewFeedListViewController") as! NewFeedListViewController }
     
     
     // 获得详情和评论朱世玉视图
-    func getDetailAndCommitViewController (new:New)-> DetailAndCommitViewController{
+    func getDetailAndCommitViewController (_ new:New)-> DetailAndCommitViewController{
         
-        let viewController = self.storyBoard.instantiateViewControllerWithIdentifier("DetailAndCommitViewController") as! DetailAndCommitViewController
+        let viewController = self.storyBoard.instantiateViewController(withIdentifier: "DetailAndCommitViewController") as! DetailAndCommitViewController
         
         viewController.new = new
         
@@ -55,9 +47,9 @@ public extension OddityViewControllerManager{
     }
     
     // 获得详情视图
-    func getDetailViewController (new:New?)-> DetailViewController{
+    func getDetailViewController (_ new:New?)-> DetailViewController{
         
-        let viewController = self.storyBoard.instantiateViewControllerWithIdentifier("DetailViewController") as! DetailViewController
+        let viewController = self.storyBoard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
         
         viewController.new = new
         
@@ -65,9 +57,9 @@ public extension OddityViewControllerManager{
     }
     
     // 获得评论视图
-    func getCommitViewController (new:New?)-> CommitViewController{
+    func getCommitViewController (_ new:New?)-> CommitViewController{
         
-        let viewController = self.storyBoard.instantiateViewControllerWithIdentifier("CommitViewController") as! CommitViewController
+        let viewController = self.storyBoard.instantiateViewController(withIdentifier: "CommitViewController") as! CommitViewController
         
         viewController.new = new
         
@@ -77,7 +69,7 @@ public extension OddityViewControllerManager{
     // 获得管理频道视图
     func getChannelViewController ()-> ChannelViewController{
         
-        let viewController = self.storyBoard.instantiateViewControllerWithIdentifier("ChannelViewController") as! ChannelViewController
+        let viewController = self.storyBoard.instantiateViewController(withIdentifier: "ChannelViewController") as! ChannelViewController
         
         return viewController
     }

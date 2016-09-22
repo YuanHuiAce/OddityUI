@@ -8,35 +8,35 @@
 import Foundation
 
 
-public class CommectCreate: JSONEncodable {
+open class CommectCreate: JSONEncodable {
     /** 评论内容 */
-    public var content: String?
+    open var content: String?
     /** 点赞的数目 */
-    public var commend: Int32?
+    open var commend: Int32?
     /** 创建评论时间 */
-    public var ctime: String?
+    open var ctime: String?
     /** 用户ID */
-    public var uid: Int32?
+    open var uid: Int32?
     /** 用户名称 */
-    public var uname: String?
+    open var uname: String?
     /** 用户头像 */
-    public var avatar: String?
+    open var avatar: String?
     /** 评论链接 */
-    public var docid: String?
+    open var docid: String?
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["content"] = self.content
+        nillableDictionary["content"] = self.content as AnyObject??
         nillableDictionary["commend"] = self.commend?.encodeToJSON()
-        nillableDictionary["ctime"] = self.ctime
+        nillableDictionary["ctime"] = self.ctime as AnyObject??
         nillableDictionary["uid"] = self.uid?.encodeToJSON()
-        nillableDictionary["uname"] = self.uname
-        nillableDictionary["avatar"] = self.avatar
-        nillableDictionary["docid"] = self.docid
+        nillableDictionary["uname"] = self.uname as AnyObject??
+        nillableDictionary["avatar"] = self.avatar as AnyObject??
+        nillableDictionary["docid"] = self.docid as AnyObject??
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

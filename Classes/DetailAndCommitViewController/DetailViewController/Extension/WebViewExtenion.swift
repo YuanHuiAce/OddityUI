@@ -16,9 +16,9 @@ extension DetailViewController:WKNavigationDelegate{
      
      - parameter scrollView: 滑动视图
      */
-    public func scrollViewDidScroll(scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        let height = UIScreen.mainScreen().bounds.height+scrollView.contentOffset.y
+        let height = UIScreen.main.bounds.height+scrollView.contentOffset.y
         
         let jsStr = "scrollMethod(\(height))"
         
@@ -35,7 +35,7 @@ extension DetailViewController:WKNavigationDelegate{
      
      - parameter scrollView: 滑动视图
      */
-    public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         new?.getNewContentObject()?.scroffY(scrollView.contentOffset.y)
     }
@@ -62,17 +62,17 @@ extension DetailViewController:WKNavigationDelegate{
          *
          *  @return 所需要完成的操作
          */
-        NSNotificationCenter.defaultCenter().addObserverForName(FONTMODALSTYLEIDENTIFITER, object: nil, queue: NSOperationQueue.mainQueue()) { (_) in
-            
-            self.tableView.reloadData()
-            
-            let jsStr = "document.getElementById('body_section').style.fontSize=\(UIFont.a_font3.pointSize);document.getElementById('subtitle').style.fontSize=\(UIFont.a_font8.pointSize);document.getElementById('title').style.fontSize=\(UIFont.a_font9.pointSize);"
-            
-            self.webView.evaluateJavaScript(jsStr, completionHandler: { (body, error) in
-                
-                self.adaptionWebViewHeightMethod()
-            })
-        }
+//        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: FONTMODALSTYLEIDENTIFITER), object: nil, queue: OperationQueue.main) { (_) in
+//            
+//            self.tableView.reloadData()
+//            
+//            let jsStr = "document.getElementById('body_section').style.fontSize=\(UIFont.a_font3.pointSize);document.getElementById('subtitle').style.fontSize=\(UIFont.a_font8.pointSize);document.getElementById('title').style.fontSize=\(UIFont.a_font9.pointSize);"
+//            
+//            self.webView.evaluateJavaScript(jsStr, completionHandler: { (body, error) in
+//                
+//                self.adaptionWebViewHeightMethod()
+//            })
+//        }
     }
     
     
@@ -87,13 +87,13 @@ extension DetailViewController:WKNavigationDelegate{
     func initWebViewInit(){
         
         let configuration = WKWebViewConfiguration()
-        configuration.userContentController.addScriptMessageHandler(self, name: "JSBridge")
+        configuration.userContentController.add(self, name: "JSBridge")
         //        configuration.allowsInlineMediaPlayback = true
-        self.webView = WKWebView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 600, height: 1000)), configuration: configuration)
+        self.webView = WKWebView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 600, height: 1000)), configuration: configuration)
         
-        self.webView.hidden = true
+        self.webView.isHidden = true
         self.webView.navigationDelegate = self
-        self.webView.scrollView.scrollEnabled = false
+        self.webView.scrollView.isScrollEnabled = false
         self.webView.scrollView.scrollsToTop = false
         self.webView.scrollView.bounces = false
         self.tableView.tableHeaderView = self.webView
@@ -117,10 +117,6 @@ extension DetailViewController:WKNavigationDelegate{
                 
                 self.ShowNewCOntentInWebView(newCon)
                 
-                //                self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forItem: 0, inSection: 1)], withRowAnimation: UITableViewRowAnimation.Automatic)
-                
-                self.tableView.reloadData()
-                
                 }, fail: { 
                     self.waitView.setNoNetWork {
                         
@@ -136,11 +132,11 @@ extension DetailViewController:WKNavigationDelegate{
      
      - parameter newContent: 新闻详情 NewContent 类型
      */
-    func ShowNewCOntentInWebView(newContent:NewContent?=nil){
+    func ShowNewCOntentInWebView(_ newContent:NewContent?=nil){
         
         if let newCon = newContent {
             
-            self.webView.loadHTMLString(newCon.getHtmlResourcesString(), baseURL: NSBundle.OddityBundle().bundleURL)
+            self.webView.loadHTMLString(newCon.getHtmlResourcesString(), baseURL: Bundle.OddityBundle().bundleURL)
         }
     }
     
@@ -148,7 +144,7 @@ extension DetailViewController:WKNavigationDelegate{
      当调用到这个方法的时候，WkWebView将会调用Javascript的方法，来以此获取新闻展示页面所需要的高度
      获取高度完成之后就进行页面的重新布局以加入到tableView的表头中作为一个详情展示页
      */
-    func adaptionWebViewHeightMethod(height:CGFloat = -1){
+    func adaptionWebViewHeightMethod(_ height:CGFloat = -1){
         
         self.webView.evaluateJavaScript("document.getElementById('section').offsetHeight") { (data, _) in
             
@@ -173,11 +169,11 @@ extension DetailViewController:WKNavigationDelegate{
      - parameter webView:    webview
      - parameter navigation: 什么玩意？
      */
-    public func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         self.adaptionWebViewHeightMethod()
         
-        self.webView.hidden = false
+        self.webView.isHidden = false
         
         self.tableView.setContentOffset(CGPoint(x: 0,y: 1), animated: false)
         
@@ -186,13 +182,13 @@ extension DetailViewController:WKNavigationDelegate{
             self.tableView.setContentOffset(CGPoint(x: 0, y: CGFloat(off)), animated: false)
         }
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.6 * Double(NSEC_PER_SEC))),dispatch_get_main_queue(), {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.6 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: {
             
             self.hiddenWaitLoadView() // 隐藏加载视图
         })
     }
     
-    public func webView(webView: WKWebView, didFailNavigation navigation: WKNavigation!, withError error: NSError) {
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         
         self.waitView.setNoNetWork {
             
@@ -208,16 +204,16 @@ extension DetailViewController:WKNavigationDelegate{
      - parameter navigationAction: 发生的链接变化
      - parameter decisionHandler:  处理方式
      */
-    public func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
-        if navigationAction.navigationType == WKNavigationType.LinkActivated {
+        if navigationAction.navigationType == WKNavigationType.linkActivated {
             
 //            self.goWebViewController(navigationAction.request.URL!.URLString)
             
-            return decisionHandler(WKNavigationActionPolicy.Cancel)
+            return decisionHandler(WKNavigationActionPolicy.cancel)
         }
         
-        return decisionHandler(WKNavigationActionPolicy.Allow)
+        return decisionHandler(WKNavigationActionPolicy.allow)
     }
 }
 
@@ -227,16 +223,16 @@ import PINRemoteImage
 
 extension String {
     
-    private func DownloadImageByUrl(progress:(Int) -> Void,finish:(String) -> Void){
+    fileprivate func DownloadImageByUrl(_ progress:@escaping (Int) -> Void,finish:@escaping (String) -> Void){
         
-        if let str = PINCache.sharedCache().objectForKey("hanle\(self)") as? String {
+        if let str = PINCache.shared().object(forKey: "hanle\(self)") as? String {
             
             return finish(str)
         }
         
-        guard let url = NSURL(string: self) else { return }
+        guard let url = URL(string: self) else { return }
         
-        PINRemoteImageManager.sharedImageManager().downloadImageWithURL(url, options: .DownloadOptionsNone, progressDownload: { (min, max) in
+        PINRemoteImageManager.shared().downloadImage(with: url, options: PINRemoteImageManagerDownloadOptions(), progressDownload: { (min, max) in
 
             if url.absoluteString.hasSuffix(".gif") {
                 
@@ -256,20 +252,20 @@ extension String {
      - parameter finish: 处理完成化后的回调
      - parameter result: Result to PINRemoteImageManagerResult
      */
-    private func HandlePinDownLoadResult(finish:(String) -> Void,result:PINRemoteImageManagerResult){
+    fileprivate func HandlePinDownLoadResult(_ finish:@escaping (String) -> Void,result:PINRemoteImageManagerResult){
     
         /// 含有静态图片
-        if let img = result.image ,base64 = UIImageJPEGRepresentation(img, 0.9)?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.init(rawValue: 0)){
+        if let img = result.image ,let base64 = UIImageJPEGRepresentation(img, 0.9)?.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0)){
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async(execute: {
                 
                 let string = "data:image/jpeg;base64,\(base64)".replaceRegex("<", with: "").replaceRegex(">", with: "")
                 
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     
                     finish(string)
                     
-                    PINCache.sharedCache().setObject(string, forKey: "hanle\(self)")
+                    PINCache.shared().setObject(string as NSCoding, forKey: "hanle\(self)")
                 })
             })
         }
@@ -277,17 +273,17 @@ extension String {
         /// 含有动态图片
         if let img = result.animatedImage {
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async(execute: {
                 
-                let base64 = img.data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.init(rawValue: 0))
+                let base64 = img.data.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
                 
                 let string = "data:image/gif;base64,\(base64)".replaceRegex("<", with: "").replaceRegex(">", with: "")
                 
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     
                     finish(string)
                     
-                    PINCache.sharedCache().setObject(string, forKey: "hanle\(self)")
+                    PINCache.shared().setObject(string as NSCoding, forKey: "hanle\(self)")
                 })
             })
         }
@@ -305,22 +301,24 @@ extension DetailViewController :WKScriptMessageHandler{
      - parameter userContentController: userContentController
      - parameter message:               javascript 所发出的消息体
      */
-    public func userContentController(userContentController: WKUserContentController, didReceiveScriptMessage message: WKScriptMessage) {
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         
-        guard let type = message.body["type"] as? Int else{return}
+        guard let bodyData = message.body as? Dictionary<String,AnyObject> else { return }
+        
+        guard let type = bodyData["type"] as? Int else{return}
         
         if type == 0 { return self.adaptionWebViewHeightMethod() }
         
         if type == 3 {
             
-            if let url = message.body["url"] as? String,index = message.body["index"] as? Int {
+            if let url = bodyData["url"] as? String,let index = bodyData["index"] as? Int {
                 
                 self.HandleUrlAndIndex(url, index: index)
             }
         }
         
 //        if type == 1 {
-//            if let index = message.body["index"] as? Int,let res = new?.getNewContentObject()?.getSkPhotos() {
+//            if let index = bodyData["index"] as? Int,let res = new?.getNewContentObject()?.getSkPhotos() {
 //                let browser = SKPhotoBrowser(photos: res)
 //                browser.initializePageIndex(index)
 //                browser.statusBarStyle = .LightContent
@@ -336,11 +334,11 @@ extension DetailViewController :WKScriptMessageHandler{
      - parameter url:   图片URL
      - parameter index: 图片所在的Index
      */
-    private func HandleUrlAndIndex(url:String,index:Int){
+    fileprivate func HandleUrlAndIndex(_ url:String,index:Int){
     
         url.DownloadImageByUrl({ (pro) in
 
-            dispatch_async(dispatch_get_main_queue(), { 
+            DispatchQueue.main.async(execute: { 
                 
                 let jsStr = "$(\"div .customProgressBar\").eq(\(index)).css(\"width\",\"\(pro)%\")"
                 

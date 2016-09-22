@@ -41,7 +41,7 @@ extension DetailViewController{
 
 
 
-public class DetailViewController: UIViewController,WaitLoadProtcol {
+open class DetailViewController: UIViewController,WaitLoadProtcol {
     
     var webView:WKWebView!
     
@@ -61,7 +61,7 @@ public class DetailViewController: UIViewController,WaitLoadProtcol {
     
     @IBOutlet var tableView: UITableView!
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         
         super.viewDidLoad()
         
@@ -69,18 +69,29 @@ public class DetailViewController: UIViewController,WaitLoadProtcol {
             
             newCon = new.getNewContentObject()
             
-            aboutResults = realm.objects(About.self).filter("nid = \(new.nid)").sorted("ptimes", ascending: false)
-            hotResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 1").sorted("commend", ascending: false)
-
-            CommentUtil.LoadHotsCommentsList(new, finish: {
-                
-                self.tableView.reloadData()
-            })
+            aboutResults = realm.objects(About.self).filter("nid = \(new.nid)").sorted(byProperty: "ptimes", ascending: false)
             
-            AboutUtil.getAboutListArrayData(new, finish: { (count) in
+            hotResults = realm.objects(Comment.self).filter("nid = \(new.nid) AND ishot = 1").sorted(byProperty: "commend", ascending: false)
+
+            CommentUtil.LoadNoramlCommentsList(new)
+            
+            CommentUtil.LoadHotsCommentsList(new, finish: { 
                 
-                self.tableView.reloadData()
-            })
+                DispatchQueue.main.async {
+                    
+                    self.tableView.reloadData()
+                }
+                
+                }, fail: nil)
+            
+            AboutUtil.getAboutListArrayData(new , finish: { (_) in
+                
+                DispatchQueue.main.async {
+                    
+                    self.tableView.reloadData()
+                }
+                
+                }, fail: nil)
         }
         
         self.tableView.contentInset.bottom = 44
@@ -90,15 +101,15 @@ public class DetailViewController: UIViewController,WaitLoadProtcol {
     
     func setCollectionButton(){
         
-        let indexPath = NSIndexPath(forItem: 0, inSection: 0)
+        let indexPath = IndexPath(item: 0, section: 0)
         
-        self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+        self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
     }
 }
 
 
 extension DetailViewController:IndicatorInfoProvider{
-    
+
     /**
       当设备的方向发生变化时，将会调用这个方法
      当设备的方向发生了变化之后，我们要为之重新设置详情页中webview的高度。
@@ -106,11 +117,13 @@ extension DetailViewController:IndicatorInfoProvider{
      - parameter size:        方向完成后的大小
      - parameter coordinator: 方向变化的动画渐变对象
      */
-    override public func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
-        coordinator.animateAlongsideTransition({ (_) in
+        coordinator.animate(alongsideTransition: { (_) in
             
             self.webView.evaluateJavaScript("fixedImageHeightAndWidth()", completionHandler: nil)
+            
+            print("横屏书评 发生变化 刷新表格")
             
             self.tableView.reloadData()
             
@@ -124,8 +137,7 @@ extension DetailViewController:IndicatorInfoProvider{
      - parameter pagerTabStripController: 视图对象
      - returns: 标题对象
      */
-    public func indicatorInfoForPagerTabStrip(pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
-        
+    public func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         let info = IndicatorInfo(title: "评论")
         
         return info

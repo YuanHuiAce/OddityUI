@@ -19,9 +19,9 @@ private extension Channel{
      
      - returns: 返回 数据
      */
-    private class func ChannelArray() -> Results<Channel>{
+    class func ChannelArray() -> Results<Channel>{
         let realm = try! Realm()
-        return realm.objects(Channel).sorted("orderindex")
+        return realm.objects(Channel.self).sorted(byProperty: "orderindex")
     }
     
     /**
@@ -29,7 +29,7 @@ private extension Channel{
      
      - parameter orderindex: 要改变成为的 排序 顺序
      */
-    private func nChangeOrderIndex(orderindex:Int){
+    func nChangeOrderIndex(_ orderindex:Int){
         let realm = try! Realm()
         if self.orderindex == orderindex { return }
         try! realm.write { self.orderindex = orderindex }
@@ -39,7 +39,7 @@ private extension Channel{
 
 
 
-public class ChannelViewController: UIViewController {
+open class ChannelViewController: UIViewController {
     
     let allChannelArray = Channel.ChannelArray() // 全部的频道列表
     let delChannelArray = Channel.DeletedChannelArray()
@@ -50,9 +50,9 @@ public class ChannelViewController: UIViewController {
     let PresentdAnimation = CustomViewControllerPresentdAnimation()
     let InteractiveTransitioning = UIPercentDrivenInteractiveTransition() // 完成 process 渐进行动画
     
-    private var allNotificationToken:NotificationToken!
-    private var delNotificationToken:NotificationToken!
-    private var norNotificationToken:NotificationToken!
+    fileprivate var allNotificationToken:NotificationToken!
+    fileprivate var delNotificationToken:NotificationToken!
+    fileprivate var norNotificationToken:NotificationToken!
     
     
     @IBOutlet var pan: UIPanGestureRecognizer!
@@ -69,7 +69,7 @@ public class ChannelViewController: UIViewController {
 //        self.modalPresentationStyle = UIModalPresentationStyle.Custom
     }
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         
         super.viewDidLoad()
 
@@ -78,7 +78,7 @@ public class ChannelViewController: UIViewController {
             layout.delegate = self
         }
         
-        collectionView.panGestureRecognizer.requireGestureRecognizerToFail(pan)
+        collectionView.panGestureRecognizer.require(toFail: pan)
         
         pan.delegate = self
     }
@@ -87,29 +87,29 @@ public class ChannelViewController: UIViewController {
 
 extension ChannelViewController : UIGestureRecognizerDelegate,UIViewControllerTransitioningDelegate{
 
-    @IBAction func cancelDismiss(anyObject: AnyObject) {
+    @IBAction func cancelDismiss(_ anyObject: AnyObject) {
     
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
-    public func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         
-        let point = pan.translationInView(view)
+        let point = pan.translation(in: view)
         
         return fabs(point.x) > fabs(point.y)
     }
     
-    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         return PresentdAnimation
     }
     
-    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         return DismissedAnimation
     }
     
-    public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         
         if self.DismissedAnimation.isInteraction {
             
@@ -119,25 +119,25 @@ extension ChannelViewController : UIGestureRecognizerDelegate,UIViewControllerTr
         return nil
     }
     
-    @IBAction func panAction(pan: UIPanGestureRecognizer) {
+    @IBAction func panAction(_ pan: UIPanGestureRecognizer) {
         
         guard let view = pan.view else{return}
         
-        let point = pan.translationInView(view)
+        let point = pan.translation(in: view)
         
-        if pan.state == UIGestureRecognizerState.Began {
+        if pan.state == UIGestureRecognizerState.began {
             
             if point.x < 0 {return}
             
             self.DismissedAnimation.isInteraction = true
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
             
-        }else if pan.state == UIGestureRecognizerState.Changed {
+        }else if pan.state == UIGestureRecognizerState.changed {
             
-            let process = point.x/UIScreen.mainScreen().bounds.width
+            let process = point.x/UIScreen.main.bounds.width
             
-            self.InteractiveTransitioning.updateInteractiveTransition(process)
+            self.InteractiveTransitioning.update(process)
             
         }else {
             
@@ -145,15 +145,15 @@ extension ChannelViewController : UIGestureRecognizerDelegate,UIViewControllerTr
             
             let loctionX = abs(Int(point.x))
             
-            let velocityX = pan.velocityInView(pan.view).x
+            let velocityX = pan.velocity(in: pan.view).x
             
-            if velocityX >= 800 || loctionX >= Int(UIScreen.mainScreen().bounds.width/2) {
+            if velocityX >= 800 || loctionX >= Int(UIScreen.main.bounds.width/2) {
                 
-                self.InteractiveTransitioning.finishInteractiveTransition()
+                self.InteractiveTransitioning.finish()
                 
             }else{
                 
-                self.InteractiveTransitioning.cancelInteractiveTransition()
+                self.InteractiveTransitioning.cancel()
             }
         }
     }
@@ -161,34 +161,34 @@ extension ChannelViewController : UIGestureRecognizerDelegate,UIViewControllerTr
 
 extension ChannelViewController : KDRearrangeableCollectionViewDelegate {
 
-    func moveDataItem(fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+    func moveDataItem(_ fromIndexPath: IndexPath, toIndexPath: IndexPath) {
         
         let realm = try! Realm()
         
         try! realm.write {
             
-            if fromIndexPath.item < toIndexPath.item {
+            if (fromIndexPath as NSIndexPath).item < (toIndexPath as NSIndexPath).item {
             
-                let fromChannel = norChannelArray[fromIndexPath.item]
+                let fromChannel = norChannelArray[(fromIndexPath as NSIndexPath).item]
                 
-                for chan in self.norChannelArray.filter("orderindex > %@ && orderindex <= %@ ", min(fromIndexPath.item,toIndexPath.item),max(fromIndexPath.item,toIndexPath.item)) {
+                for chan in self.norChannelArray.filter("orderindex > %@ && orderindex <= %@ ", min((fromIndexPath as NSIndexPath).item,(toIndexPath as NSIndexPath).item),max((fromIndexPath as NSIndexPath).item,(toIndexPath as NSIndexPath).item)) {
                     
                     chan.orderindex = chan.orderindex - 1
                 }
                 
-                fromChannel.orderindex = toIndexPath.item
+                fromChannel.orderindex = (toIndexPath as NSIndexPath).item
             }
             
-            if fromIndexPath.item > toIndexPath.item {
+            if (fromIndexPath as NSIndexPath).item > (toIndexPath as NSIndexPath).item {
                 
-                let fromChannel = norChannelArray[fromIndexPath.item]
+                let fromChannel = norChannelArray[(fromIndexPath as NSIndexPath).item]
                 
-                for chan in self.norChannelArray.filter("orderindex >= %@ && orderindex < %@ ", min(fromIndexPath.item,toIndexPath.item),max(fromIndexPath.item,toIndexPath.item)) {
+                for chan in self.norChannelArray.filter("orderindex >= %@ && orderindex < %@ ", min((fromIndexPath as NSIndexPath).item,(toIndexPath as NSIndexPath).item),max((fromIndexPath as NSIndexPath).item,(toIndexPath as NSIndexPath).item)) {
                     
                     chan.orderindex = chan.orderindex + 1
                 }
                 
-                fromChannel.orderindex = toIndexPath.item
+                fromChannel.orderindex = (toIndexPath as NSIndexPath).item
             }
         }
     }
@@ -196,36 +196,36 @@ extension ChannelViewController : KDRearrangeableCollectionViewDelegate {
 
 extension ChannelViewController :UICollectionViewDelegate{
 
-    private func getChannelByIndexPath(indexPath: NSIndexPath) -> Channel{
+    fileprivate func getChannelByIndexPath(_ indexPath: IndexPath) -> Channel{
     
-        if indexPath.section == 0 {
+        if (indexPath as NSIndexPath).section == 0 {
             
-            return self.norChannelArray[indexPath.item]
+            return self.norChannelArray[(indexPath as NSIndexPath).item]
         }else {
             
-            return self.delChannelArray[indexPath.item]
+            return self.delChannelArray[(indexPath as NSIndexPath).item]
         }
     }
     
-    public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if indexPath.item == 0 && indexPath.section == 0 {return}
+        if (indexPath as NSIndexPath).item == 0 && (indexPath as NSIndexPath).section == 0 {return}
         
-        self.collectionView.userInteractionEnabled = false
+        self.collectionView.isUserInteractionEnabled = false
         
         let channel = self.getChannelByIndexPath(indexPath)
 
         let realm = try! Realm()
         
-        var toIndexPath:NSIndexPath!
+        var toIndexPath:IndexPath!
         
-        if indexPath.section == 0 {
+        if (indexPath as NSIndexPath).section == 0 {
         
             try! realm.write {
                 
-                if indexPath.item+1 != norChannelArray.count {
+                if (indexPath as NSIndexPath).item+1 != norChannelArray.count {
                 
-                    for chan in self.norChannelArray[indexPath.item+1...norChannelArray.count-1] {
+                    for chan in self.norChannelArray[(indexPath as NSIndexPath).item+1...norChannelArray.count-1] {
                         
                         chan.orderindex = chan.orderindex-1
                     }
@@ -235,10 +235,10 @@ extension ChannelViewController :UICollectionViewDelegate{
                 channel.orderindex = delChannelArray.count
             }
             
-            toIndexPath = NSIndexPath(forItem: self.delChannelArray.count-1, inSection: 1)
+            toIndexPath = IndexPath(item: self.delChannelArray.count-1, section: 1)
         }
         
-        if indexPath.section == 1 {
+        if (indexPath as NSIndexPath).section == 1 {
             
             try! realm.write {
 
@@ -246,40 +246,40 @@ extension ChannelViewController :UICollectionViewDelegate{
                 channel.orderindex = norChannelArray.count
             }
             
-            toIndexPath = NSIndexPath(forItem: self.norChannelArray.count-1, inSection: 0)
+            toIndexPath = IndexPath(item: self.norChannelArray.count-1, section: 0)
         }
         
         self.collectionView.performBatchUpdates({
             
-            collectionView.moveItemAtIndexPath(indexPath, toIndexPath: toIndexPath ) // 动画完成这个操作
+            collectionView.moveItem(at: indexPath, to: toIndexPath ) // 动画完成这个操作
             
         }) { (_) in
             
             self.collectionView.reloadData()
-            self.collectionView.userInteractionEnabled = true
+            self.collectionView.isUserInteractionEnabled = true
         }
     }
 }
 
 extension ChannelViewController:UICollectionViewDelegateFlowLayout,UICollectionViewDataSource{
 
-    public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 2
     }
     
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return section == 0 ? self.norChannelArray.count : self.delChannelArray.count
     }
     
-    public func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionElementKindSectionHeader {
         
-            let reusableView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "reusable", forIndexPath: indexPath) as! ChannelReusableView
+            let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "reusable", for: indexPath) as! ChannelReusableView
             
-            reusableView.descLabel.text = indexPath.section == 0 ? "我的频道（拖动调整顺序）" : "热门频道 （点击添加更多）"
+            reusableView.descLabel.text = (indexPath as NSIndexPath).section == 0 ? "我的频道（拖动调整顺序）" : "热门频道 （点击添加更多）"
             
             return reusableView
         }
@@ -287,13 +287,13 @@ extension ChannelViewController:UICollectionViewDelegateFlowLayout,UICollectionV
         return UICollectionReusableView()
     }
     
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("cell", forIndexPath: indexPath) as! ChannelCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ChannelCollectionViewCell
         
         let channel = self.getChannelByIndexPath(indexPath)
         
-        channel.nChangeOrderIndex(indexPath.item)
+        channel.nChangeOrderIndex((indexPath as NSIndexPath).item)
         
         cell.setChannel(channel)
         
@@ -303,30 +303,30 @@ extension ChannelViewController:UICollectionViewDelegateFlowLayout,UICollectionV
         return cell
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     
-        let scSize = UIScreen.mainScreen().bounds
+        let scSize = UIScreen.main.bounds
         
         return CGSize(width: (min(scSize.width, scSize.height)-18*2-12*2)/3, height: 35)
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets{
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets{
     
         return UIEdgeInsets(top: 26, left: 12, bottom: 26, right: 12)
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
     
         return 20
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat{
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat{
     
         return 18
     }
     
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize{
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize{
     
         return CGSize(width: 0, height: section == 0 ? 42 : 42+9)
     }

@@ -7,7 +7,7 @@
 import Foundation
 
 class APIHelper {
-    static func rejectNil(source: [String:AnyObject?]) -> [String:AnyObject]? {
+    static func rejectNil(_ source: [String:AnyObject?]) -> [String:AnyObject]? {
         var destination = [String:AnyObject]()
         for (key, nillableValue) in source {
             if let value: AnyObject = nillableValue {
@@ -21,15 +21,15 @@ class APIHelper {
         return destination
     }
 
-    static func convertBoolToString(source: [String: AnyObject]?) -> [String:AnyObject] {
+    static func convertBoolToString(_ source: [String: AnyObject]?) -> [String:AnyObject] {
         var destination = [String:AnyObject]()
-        let theTrue = NSNumber(bool: true)
-        let theFalse = NSNumber(bool: false)
+        let theTrue = NSNumber(value: true as Bool)
+        let theFalse = NSNumber(value: false as Bool)
         if (source != nil) {
             for (key, value) in source! {
                 switch value {
                     case let x where x === theTrue || x === theFalse:
-                        destination[key] = "\(value as! Bool)"
+                        destination[key] = "\(value as! Bool)" as AnyObject?
                     default:
                         destination[key] = value
                 }

@@ -6,7 +6,6 @@
 //  Copyright © 2016年 aimobier. All rights reserved.
 //
 
-import Alamofire
 import RealmSwift
 
 let USERLOGINCHANGENOTIFITION = "USERLOGINCHANGENOTIFITION" // 用户登录成功或者注销完成
@@ -27,7 +26,7 @@ private let S_USER_AVATAR = "SUSERAVATAR" //  第三方用户的头像
 private let S_USER_GENDER = "SUSERGENDER" //  第三方用户的性别
 
 /// 登录用户
-public class ShareLUser:NSObject{
+open class ShareLUser:NSObject{
     
     /// 用户平台注释
     /// 1 OS
@@ -37,15 +36,15 @@ public class ShareLUser:NSObject{
     static var platform:Int = 1
     
     /// 用户是否登陆
-    public class var islogin:Bool{
-        get{return NSUserDefaults.standardUserDefaults().boolForKey(USER_ISLOGIN) }
-        set(new){ NSUserDefaults.standardUserDefaults().setBool(new, forKey: USER_ISLOGIN)}
+    open class var islogin:Bool{
+        get{return UserDefaults.standard.bool(forKey: USER_ISLOGIN) }
+        set(new){ UserDefaults.standard.set(new, forKey: USER_ISLOGIN)}
     }
     
     /// 用户ID
-    public class var uid:Int{
-        get{return NSUserDefaults.standardUserDefaults().integerForKey(USER_UID) }
-        set(new){ NSUserDefaults.standardUserDefaults().setInteger(new, forKey: USER_UID)}
+    open class var uid:Int{
+        get{return UserDefaults.standard.integer(forKey: USER_UID) }
+        set(new){ UserDefaults.standard.set(new, forKey: USER_UID)}
     }
     
     ///  用户类型
@@ -53,87 +52,87 @@ public class ShareLUser:NSObject{
     ///  2 游客用户
     ///  3 微博三方用户
     ///  4 微信三方用户
-    public class var utype:Int{
-        get{return NSUserDefaults.standardUserDefaults().integerForKey(USER_TYPE) }
-        set(new){ NSUserDefaults.standardUserDefaults().setInteger(new, forKey: USER_TYPE)}
+    open class var utype:Int{
+        get{return UserDefaults.standard.integer(forKey: USER_TYPE) }
+        set(new){ UserDefaults.standard.set(new, forKey: USER_TYPE)}
     }
     
     /// 用户的密码
     class var password:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(USER_PASSWORD) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: USER_PASSWORD)}
+        get{return UserDefaults.standard.string(forKey: USER_PASSWORD) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: USER_PASSWORD)}
     }
     
     /// 用户的名称
-    public class var uname:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(USER_NAME) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: USER_NAME)}
+    open class var uname:String{
+        get{return UserDefaults.standard.string(forKey: USER_NAME) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: USER_NAME)}
     }
     
     /// 用户的头像
-    public class var avatar:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(USER_AVATAR) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: USER_AVATAR)}
+    open class var avatar:String{
+        get{return UserDefaults.standard.string(forKey: USER_AVATAR) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: USER_AVATAR)}
     }
     
     /// 用户的 Token
-    public class var token:String?{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(USER_TOKEN)}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: USER_TOKEN)}
+    open class var token:String?{
+        get{return UserDefaults.standard.string(forKey: USER_TOKEN)}
+        set(new){ UserDefaults.standard.set(new, forKey: USER_TOKEN)}
     }
     
     
     /// 第三方用户的id
-    public class var s_uid:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(S_USER_UID) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: S_USER_UID)}
+    open class var s_uid:String{
+        get{return UserDefaults.standard.string(forKey: S_USER_UID) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_UID)}
     }
     
     /// 第三方用户的token
-    public class var s_token:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(S_USER_TOKEN) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: S_USER_TOKEN)}
+    open class var s_token:String{
+        get{return UserDefaults.standard.string(forKey: S_USER_TOKEN) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_TOKEN)}
     }
     
     /// 第三方用户的过期时间
-    public class var s_sexpires:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(S_USER_SEXPIRES) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: S_USER_SEXPIRES)}
+    open class var s_sexpires:String{
+        get{return UserDefaults.standard.string(forKey: S_USER_SEXPIRES) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_SEXPIRES)}
     }
     
     /// 第三方用户的名称
-    public class var s_uname:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(S_USER_UNAME) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: S_USER_UNAME)}
+    open class var s_uname:String{
+        get{return UserDefaults.standard.string(forKey: S_USER_UNAME) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_UNAME)}
     }
     /// 第三方用户的头像
-    public class var s_avatar:String{
-        get{return NSUserDefaults.standardUserDefaults().stringForKey(S_USER_AVATAR) ?? ""}
-        set(new){ NSUserDefaults.standardUserDefaults().setObject(new, forKey: S_USER_AVATAR)}
+    open class var s_avatar:String{
+        get{return UserDefaults.standard.string(forKey: S_USER_AVATAR) ?? ""}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_AVATAR)}
     }
     /// 第三方用户的 性别
-    public class var s_gender:Int{
-        get{return NSUserDefaults.standardUserDefaults().integerForKey(S_USER_GENDER)}
-        set(new){ NSUserDefaults.standardUserDefaults().setInteger(new, forKey: S_USER_GENDER)}
+    open class var s_gender:Int{
+        get{return UserDefaults.standard.integer(forKey: S_USER_GENDER)}
+        set(new){ UserDefaults.standard.set(new, forKey: S_USER_GENDER)}
     }
     
     
     // 获得用户的Token
-    public class func getSdkUserToken(finish:((token:String)->Void)?){
+    open class func getSdkUserToken(_ finish:((_ token:String)->Void)?){
         
         guard let t = token else{
             
             return ShareLUserRequest.getUserTokenByRequest({ (user) in
                 
-                finish?(token: user)
+                finish?(user)
             })
         }
         
-        finish?(token: t)
+        finish?(t)
     }
     
     /// 用户注销
-    public class func LoginOut() {
+    open class func LoginOut() {
         
         ShareLUser.utype = 2
         ShareLUser.uname = ""
@@ -145,10 +144,10 @@ public class ShareLUser:NSObject{
         ShareLUser.s_avatar = ""
         ShareLUser.s_gender = 0
         
-        NSNotificationCenter.defaultCenter().postNotificationName(USERLOGINCHANGENOTIFITION, object: nil)
+        NotificationCenter.default.post(name: Foundation.Notification.Name(rawValue: USERLOGINCHANGENOTIFITION), object: nil)
     }
     
-    public class func sprint(){
+    open class func sprint(){
     
         print("platform:",ShareLUser.platform)
         print("islogin:",ShareLUser.islogin)
@@ -167,7 +166,7 @@ public class ShareLUser:NSObject{
 }
 
 
-public class ShareLUserRequest: NSObject {
+open class ShareLUserRequest: NSObject {
     
     /**
      想服务器注册一个游客用户用来完成一些基本到操作
@@ -175,13 +174,17 @@ public class ShareLUserRequest: NSObject {
      - parameter finish: 完成回调
      - parameter fail:   失败回调
      */
-    public class func getUserTokenByRequest(finish:((token:String)->Void),fail:(()->Void)?=nil){
+    open class func getUserTokenByRequest(_ finish:@escaping ((_ token:String)->Void),fail:(()->Void)?=nil){
         
-        let requestBuder = UserAPI.auSinGPostWithRequestBuilder(userRegisterInfo: VisitorsRegister(utype: 2, platform: 1))
+        let path = "/au/sin/g"
+        let URLString = SimpleRequest.basePath + path
+        let params = ["utype":2,"platform":1]
         
-        requestBuder.execute { (response, error) in
+        let request = SimpleRequest.budileRequest(URLString, method: .post, parameters: params, encoding: JSONEncoding.default, headers: nil)
+        
+        request.request { (datas, str, res) in
             
-            guard let token =  response?.header["Authorization"],let data = response?.body.objectForKey("data"),uid = data.objectForKey("uid") as? Int,utype = data.objectForKey("utype") as? Int,password = data.objectForKey("password") as? String else{
+            guard let token =  res?.allHeaderFields["Authorization"] as? String,let data = datas?["data"],let uid = data.object(forKey: "uid") as? Int,let utype = data.object(forKey: "utype") as? Int,let password = data.object(forKey: "password") as? String else{
                 fail?()
                 return
             }
@@ -192,44 +195,11 @@ public class ShareLUserRequest: NSObject {
             ShareLUser.password = password
             ShareLUser.token = token
             
-            finish(token: token)
+            finish(token)
+
         }
     }
     
-    /**
-     第三方用户注册
-     
-     - parameter user:   需要完善的用户信息 #UserRegister#
-     - parameter finish: 完成 接口 毁掉
-     - parameter fail:   失败的 接口回调
-     */
-    public class func resigterSanFangUser(user:UserRegister,finish:(()->Void)?=nil,fail:(()->Void)?=nil){
-        
-        let requestBuder = UserAPI.auSinSPostWithRequestBuilder(userRegisterInfo: user)
-        requestBuder.execute { (response, error) in
-            
-            guard let token =  response?.header["Authorization"],let data = response?.body.objectForKey("data"),uid = data.objectForKey("uid") as? Int,utype = data.objectForKey("utype") as? Int else{
-                fail?()
-                return
-            }
-            
-            if let value = response?.body.objectForKey("uname") as? String{
-                ShareLUser.uname = value
-            }
-            
-            if let value = response?.body.objectForKey("avatar") as? String{
-                ShareLUser.avatar = value
-            }
-            
-            ShareLUser.uid = uid
-            ShareLUser.utype = utype
-            ShareLUser.token = token
-            
-            NSNotificationCenter.defaultCenter().postNotificationName(USERLOGINCHANGENOTIFITION, object: nil)
-            
-            finish?()
-        }
-    }
     
     /**
      重新登录方法，在用户使用某些借口的时候，出现了 4003 的回复的时候，说明用户的token 过期。
@@ -237,30 +207,30 @@ public class ShareLUserRequest: NSObject {
      
      - parameter finish: 完成接口回调
      */
-    public class func resetLogin(finish:(()->Void)?=nil){
+    open class func resetLogin(_ finish:(()->Void)?=nil){
     
         if ShareLUser.utype == 2 {
             
-            let visutor = VisitorsLogin(uid: Int32(ShareLUser.uid), password: ShareLUser.password)
-            let requestBuder = UserAPI.auLinGPostWithRequestBuilder(userLoginInfo: visutor)
-            
-            requestBuder.execute({ (response, error) in
-                
-                guard let token =  response?.header["Authorization"] else{ return }
-                ShareLUser.token = token
-                finish?()
-            })
+//            let visutor = VisitorsLogin(uid: Int32(ShareLUser.uid), password: ShareLUser.password)
+//            let requestBuder = UserAPI.auLinGPostWithRequestBuilder(userLoginInfo: visutor)
+//            
+//            requestBuder.execute({ (response, error) in
+//                
+//                guard let token =  response?.header["Authorization"] else{ return }
+//                ShareLUser.token = token
+//                finish?()
+//            })
         }else{
             
-            let user = UserRegister(utype: 3)
-            let requestBuder = UserAPI.auSinSPostWithRequestBuilder(userRegisterInfo: user)
-            requestBuder.execute { (response, error) in
-                
-                guard let token =  response?.header["Authorization"] else{return }
-                ShareLUser.token = token
-
-                finish?()
-            }
+//            let user = UserRegister(utype: 3)
+//            let requestBuder = UserAPI.auSinSPostWithRequestBuilder(userRegisterInfo: user)
+//            requestBuder.execute { (response, error) in
+//                
+//                guard let token =  response?.header["Authorization"] else{return }
+//                ShareLUser.token = token
+//
+//                finish?()
+//            }
         }
     }
 }
@@ -286,19 +256,19 @@ extension VisitorsRegister{
 
 
 
-extension UserRegister{
-    
-    convenience public init(utype:Int){
-        self.init()
-        
-        self.muid = Int32(ShareLUser.uid)
-        self.utype = Int32(utype)
-        self.platform = Int32(ShareLUser.platform)
-        self.suid = ShareLUser.s_uid
-        self.stoken = ShareLUser.s_token
-        self.sexpires = ShareLUser.s_sexpires
-        self.uname = ShareLUser.s_uname
-        self.avatar = ShareLUser.s_avatar
-        self.gender = Int32(ShareLUser.s_gender)
-    }
-}
+//extension UserRegister{
+//    
+//    convenience public init(utype:Int){
+//        self.init()
+//        
+//        self.muid = Int32(ShareLUser.uid)
+//        self.utype = Int32(utype)
+//        self.platform = Int32(ShareLUser.platform)
+//        self.suid = ShareLUser.s_uid
+//        self.stoken = ShareLUser.s_token
+//        self.sexpires = ShareLUser.s_sexpires
+//        self.uname = ShareLUser.s_uname
+//        self.avatar = ShareLUser.s_avatar
+//        self.gender = Int32(ShareLUser.s_gender)
+//    }
+//}

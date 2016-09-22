@@ -14,10 +14,10 @@ public extension UIFont{
 
     ///-1 为小字体 0 为普通字体 1 为大字体 2 超大字体
     public class var a_fontModalStyle:Float{
-        get {return NSUserDefaults.standardUserDefaults().floatForKey(FONTMODALSTYLEIDENTIFITER)}
+        get {return UserDefaults.standard.float(forKey: FONTMODALSTYLEIDENTIFITER)}
         set(new){
-            NSUserDefaults.standardUserDefaults().setFloat(new, forKey: FONTMODALSTYLEIDENTIFITER)
-            NSNotificationCenter.defaultCenter().postNotificationName(FONTMODALSTYLEIDENTIFITER, object: nil)
+            UserDefaults.standard.set(new, forKey: FONTMODALSTYLEIDENTIFITER)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: FONTMODALSTYLEIDENTIFITER), object: nil)
         }
     }
     
@@ -25,13 +25,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(20)
+                return UIFont.systemFont(ofSize: 20)
             case 1:
-                return UIFont.systemFontOfSize(22)
+                return UIFont.systemFont(ofSize: 22)
             case 2:
-                return UIFont.systemFontOfSize(24)
+                return UIFont.systemFont(ofSize: 24)
             default:
-                return UIFont.systemFontOfSize(19)
+                return UIFont.systemFont(ofSize: 19)
             }
         }
     }
@@ -40,13 +40,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(19)
+                return UIFont.systemFont(ofSize: 19)
             case 1:
-                return UIFont.systemFontOfSize(21)
+                return UIFont.systemFont(ofSize: 21)
             case 2:
-                return UIFont.systemFontOfSize(23)
+                return UIFont.systemFont(ofSize: 23)
             default:
-                return UIFont.systemFontOfSize(17)
+                return UIFont.systemFont(ofSize: 17)
             }
         }
     }
@@ -55,13 +55,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(18)
+                return UIFont.systemFont(ofSize: 18)
             case 1:
-                return UIFont.systemFontOfSize(20)
+                return UIFont.systemFont(ofSize: 20)
             case 2:
-                return UIFont.systemFontOfSize(22)
+                return UIFont.systemFont(ofSize: 22)
             default:
-                return UIFont.systemFontOfSize(17)
+                return UIFont.systemFont(ofSize: 17)
             }
         }
     }
@@ -70,13 +70,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.boldSystemFontOfSize(17)
+                return UIFont.boldSystemFont(ofSize: 17)
             case 1:
-                return UIFont.boldSystemFontOfSize(18)
+                return UIFont.boldSystemFont(ofSize: 18)
             case 2:
-                return UIFont.boldSystemFontOfSize(19)
+                return UIFont.boldSystemFont(ofSize: 19)
             default:
-                return UIFont.boldSystemFontOfSize(16)
+                return UIFont.boldSystemFont(ofSize: 16)
             }
         }
     }
@@ -85,13 +85,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(17)
+                return UIFont.systemFont(ofSize: 17)
             case 1:
-                return UIFont.systemFontOfSize(18)
+                return UIFont.systemFont(ofSize: 18)
             case 2:
-                return UIFont.systemFontOfSize(19)
+                return UIFont.systemFont(ofSize: 19)
             default:
-                return UIFont.systemFontOfSize(16)
+                return UIFont.systemFont(ofSize: 16)
             }
         }
     }
@@ -100,13 +100,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(16)
+                return UIFont.systemFont(ofSize: 16)
             case 1:
-                return UIFont.systemFontOfSize(17)
+                return UIFont.systemFont(ofSize: 17)
             case 2:
-                return UIFont.systemFontOfSize(18)
+                return UIFont.systemFont(ofSize: 18)
             default:
-                return UIFont.systemFontOfSize(15)
+                return UIFont.systemFont(ofSize: 15)
             }
         }
     }
@@ -115,13 +115,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(16)
+                return UIFont.systemFont(ofSize: 16)
             case 1:
-                return UIFont.systemFontOfSize(18)
+                return UIFont.systemFont(ofSize: 18)
             case 2:
-                return UIFont.systemFontOfSize(20)
+                return UIFont.systemFont(ofSize: 20)
             default:
-                return UIFont.systemFontOfSize(14)
+                return UIFont.systemFont(ofSize: 14)
             }
         }
     }
@@ -130,13 +130,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(14)
+                return UIFont.systemFont(ofSize: 14)
             case 1:
-                return UIFont.systemFontOfSize(16)
+                return UIFont.systemFont(ofSize: 16)
             case 2:
-                return UIFont.systemFontOfSize(18)
+                return UIFont.systemFont(ofSize: 18)
             default:
-                return UIFont.systemFontOfSize(14)
+                return UIFont.systemFont(ofSize: 14)
             }
         }
     }
@@ -145,13 +145,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(12)
+                return UIFont.systemFont(ofSize: 12)
             case 1:
-                return UIFont.systemFontOfSize(14)
+                return UIFont.systemFont(ofSize: 14)
             case 2:
-                return UIFont.systemFontOfSize(16)
+                return UIFont.systemFont(ofSize: 16)
             default:
-                return UIFont.systemFontOfSize(11)
+                return UIFont.systemFont(ofSize: 11)
             }
         }
     }
@@ -160,13 +160,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(10)
+                return UIFont.systemFont(ofSize: 10)
             case 1:
-                return UIFont.systemFontOfSize(12)
+                return UIFont.systemFont(ofSize: 12)
             case 2:
-                return UIFont.systemFontOfSize(14)
+                return UIFont.systemFont(ofSize: 14)
             default:
-                return UIFont.systemFontOfSize(10)
+                return UIFont.systemFont(ofSize: 10)
             }
         }
     }
@@ -176,13 +176,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(13)
+                return UIFont.systemFont(ofSize: 13)
             case 1:
-                return UIFont.systemFontOfSize(15)
+                return UIFont.systemFont(ofSize: 15)
             case 2:
-                return UIFont.systemFontOfSize(17)
+                return UIFont.systemFont(ofSize: 17)
             default:
-                return UIFont.systemFontOfSize(12)
+                return UIFont.systemFont(ofSize: 12)
             }
         }
     }
@@ -192,13 +192,13 @@ public extension UIFont{
         get{
             switch self.a_fontModalStyle {
             case 0:
-                return UIFont.systemFontOfSize(25)
+                return UIFont.systemFont(ofSize: 25)
             case 1:
-                return UIFont.systemFontOfSize(27)
+                return UIFont.systemFont(ofSize: 27)
             case 2:
-                return UIFont.systemFontOfSize(29)
+                return UIFont.systemFont(ofSize: 29)
             default:
-                return UIFont.systemFontOfSize(23)
+                return UIFont.systemFont(ofSize: 23)
             }
         }
     }

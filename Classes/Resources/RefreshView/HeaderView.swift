@@ -21,14 +21,14 @@ class NewRefreshHeaderView: MJRefreshHeader {
         
         self.mj_h = 44
         
-        let loading = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+        let loading = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
         self.addSubview(loading)
         self.loading = loading
         
         let label = UILabel()
         label.textColor = UIColor(red: 150/255, green: 150/255, blue: 150/255, alpha: 1)
-        label.font = UIFont.systemFontOfSize(10)
-        label.textAlignment = .Center
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
         self.addSubview(label)
         self.label = label
         
@@ -65,13 +65,13 @@ class NewRefreshHeaderView: MJRefreshHeader {
         didSet{
         
             switch state {
-            case .Idle:
+            case .idle:
                 self.label.text = "准备推荐"
                 self.loading.stopAnimating()
-            case .Pulling:
+            case .pulling:
                 self.label.text = "松开立即刷新"
                 self.loading.startAnimating()
-            case .Refreshing:
+            case .refreshing:
                 self.label.text = "正在推荐"
                 self.loading.startAnimating()
             default:

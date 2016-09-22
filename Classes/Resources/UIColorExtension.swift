@@ -68,17 +68,17 @@ struct ColorComponents {
 extension UIColor {
     
     func getComponents() -> ColorComponents {
-        if (CGColorGetNumberOfComponents(self.CGColor) == 2) {
-            let cc = CGColorGetComponents(self.CGColor);
-            return ColorComponents(r:cc[0], g:cc[0], b:cc[0], a:cc[1])
+        if (self.cgColor.numberOfComponents == 2) {
+            let cc = self.cgColor.components;
+            return ColorComponents(r:cc![0], g:cc![0], b:cc![0], a:cc![1])
         }
         else {
-            let cc = CGColorGetComponents(self.CGColor);
-            return ColorComponents(r:cc[0], g:cc[1], b:cc[2], a:cc[3])
+            let cc = self.cgColor.components;
+            return ColorComponents(r:cc![0], g:cc![1], b:cc![2], a:cc![3])
         }
     }
     
-    func interpolateRGBColorTo(end: UIColor, fraction: CGFloat) -> UIColor {
+    func interpolateRGBColorTo(_ end: UIColor, fraction: CGFloat) -> UIColor {
         var f = max(0, fraction)
         f = min(1, fraction)
         
@@ -114,23 +114,23 @@ extension UIColor{
 //    }
     
     
-    func ColorByProcess(toColor:UIColor,progress:CGFloat) -> UIColor{
+    func ColorByProcess(_ toColor:UIColor,progress:CGFloat) -> UIColor{
     
-        let old = CGColorGetComponents(self.CGColor)
+        let old = self.cgColor.components
         
-        let ored = old[0]
-        let ogreen = old[1]
-        let oorange = old[2]
+        let ored = old?[0]
+        let ogreen = old?[1]
+        let oorange = old?[2]
         
-        let new = CGColorGetComponents(toColor.CGColor)
+        let new = toColor.cgColor.components
         
-        let nred = new[0]
-        let ngreen = new[1]
-        let norange = new[2]
+        let nred = new?[0]
+        let ngreen = new?[1]
+        let norange = new?[2]
         
-        let finred = (1 - progress)*ored + progress*nred
-        let fingreen = (1 - progress)*ogreen + progress*ngreen
-        let finorange = (1 - progress)*oorange + progress*norange
+        let finred = (1 - progress)*ored! + progress*nred!
+        let fingreen = (1 - progress)*ogreen! + progress*ngreen!
+        let finorange = (1 - progress)*oorange! + progress*norange!
         
         return UIColor(red: finred, green: fingreen, blue: finorange, alpha: 1)
     }
@@ -138,28 +138,28 @@ extension UIColor{
 
 
 extension UIColor{
-    public class func hexStringToColor(hexString: String) -> UIColor{
-        var cString: String = hexString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+    public class func hexStringToColor(_ hexString: String) -> UIColor{
+        var cString: String = hexString.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
-        if cString.characters.count < 6 {return UIColor.blackColor()}
-        if cString.hasPrefix("0X") {cString = cString.substringFromIndex(cString.startIndex.advancedBy(2))}
-        if cString.hasPrefix("#") {cString = cString.substringFromIndex(cString.startIndex.advancedBy(1))}
-        if cString.characters.count != 6 {return UIColor.blackColor()}
+        if cString.characters.count < 6 {return UIColor.black}
+        if cString.hasPrefix("0X") {cString = cString.substring(from: cString.characters.index(cString.startIndex, offsetBy: 2))}
+        if cString.hasPrefix("#") {cString = cString.substring(from: cString.characters.index(cString.startIndex, offsetBy: 1))}
+        if cString.characters.count != 6 {return UIColor.black}
         
         var range: NSRange = NSMakeRange(0, 2)
         
-        let rString = (cString as NSString).substringWithRange(range)
+        let rString = (cString as NSString).substring(with: range)
         range.location = 2
-        let gString = (cString as NSString).substringWithRange(range)
+        let gString = (cString as NSString).substring(with: range)
         range.location = 4
-        let bString = (cString as NSString).substringWithRange(range)
+        let bString = (cString as NSString).substring(with: range)
         
         var r: UInt32 = 0x0
         var g: UInt32 = 0x0
         var b: UInt32 = 0x0
-        NSScanner.init(string: rString).scanHexInt(&r)
-        NSScanner.init(string: gString).scanHexInt(&g)
-        NSScanner.init(string: bString).scanHexInt(&b)
+        Scanner.init(string: rString).scanHexInt32(&r)
+        Scanner.init(string: gString).scanHexInt32(&g)
+        Scanner.init(string: bString).scanHexInt32(&b)
         
         return UIColor(red: CGFloat(r)/255.0, green: CGFloat(g)/255.0, blue: CGFloat(b)/255.0, alpha: CGFloat(1))
         

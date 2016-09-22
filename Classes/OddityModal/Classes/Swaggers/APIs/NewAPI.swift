@@ -5,14 +5,13 @@
 // https://github.com/swagger-api/swagger-codegen
 //
 
-import Alamofire
+import UIKit
 import RealmSwift
-import AFDateHelper
 
 
 // MARK: public
 
-public extension NewAPI{
+extension NewAPI{
 
     /**
      刷新新闻方法 根据提供的cid
@@ -24,11 +23,11 @@ public extension NewAPI{
      - parameter create:   创建一条标示性 新闻
      - parameter complete: 完成方法
      */
-    public class func RefreshNew(cid cid: Int, tcr: String = NSDate.unixTimeString,delete:Bool = false,create:Bool = true,complete:((String,Bool)->Void)){
+    class func RefreshNew(cid: Int, tcr: String = Date.unixTimeString,delete:Bool = false,create:Bool = true,complete:@escaping ((String,Bool)->Void)){
     
         self.nsFedRGet(cid: "\(cid)", tcr: tcr) { (data, error) in
             
-            if let code = data?.objectForKey("code") as? Int where code == 4003 { return ShareLUserRequest.resetLogin() }
+            if let code = data?.object(forKey: "code") as? Int , code == 4003 { return ShareLUserRequest.resetLogin() }
             
             New.deleteIdentification(cid)
             
@@ -36,7 +35,7 @@ public extension NewAPI{
             
             let beforeCount = New.DeleteBecTooMore(delete,cid: cid, realm: realm)
             
-            if let code = data?.objectForKey("code") as? Int where code == 2000,let datas = data?.objectForKey("data") as? NSArray{
+            if let code = data?.object(forKey: "code") as? Int , code == 2000,let datas = data?.object(forKey: "data") as? NSArray{
                 
                 try! realm.write({
                     
@@ -67,21 +66,23 @@ public extension NewAPI{
      - parameter cid: 频道ID
      - parameter tcr: 时间参数
      */
-    public class func LoadNew(cid cid: Int, tcr: String = NSDate.unixTimeString){
+    class func LoadNew(cid: Int, tcr: String = Date.unixTimeString,complete:@escaping ((String,Bool)->Void)){
     
         self.nsFedLGet(cid: "\(cid)", tcr: tcr) { (data, error) in
             
-            if let code = data?.objectForKey("code") as? Int where code == 4003 { return ShareLUserRequest.resetLogin() }
+            if let code = data?.object(forKey: "code") as? Int , code == 4003 { return ShareLUserRequest.resetLogin() }
             
-            if let code = data?.objectForKey("code") as? Int where code == 2000,let datas = data?.objectForKey("data") as? NSArray{
+            if let code = data?.object(forKey: "code") as? Int , code == 2000,let datas = data?.object(forKey: "data") as? NSArray{
             
                 let realm = try! Realm()
                 
+                let beforeCount = New.DeleteBecTooMore(cid: cid, realm: realm)
+            
                 try! realm.write({
                     
                     for channel in datas {
                         
-                        if let nid = channel.objectForKey("nid") as? Int where realm.objectForPrimaryKey(New.self, key: nid) == nil {
+                        if let nid = (channel as AnyObject).object(forKey: "nid") as? Int , realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject) == nil {
                         
                             realm.create(New.self, value: channel, update: true)
                             
@@ -89,7 +90,15 @@ public extension NewAPI{
                         }
                     }
                 })
+                
+                let afterCount = New.DeleteBecTooMore(cid: cid, realm: realm)
+                
+                let currenCount = afterCount - beforeCount
+                
+                return complete("一共刷新了\(currenCount)条数据", true)
             }
+            
+            complete("无更多数据", true)
         }
     }
     
@@ -100,13 +109,13 @@ public extension NewAPI{
      - parameter finish: 完成
      - parameter fail:   失败
      */
-    public class func GetnewContent(nid:Int,finish:((newCon:NewContent)->Void)?=nil,fail:(()->Void)?=nil){
+    class func GetnewContent(_ nid:Int,finish:((_ newCon:NewContent)->Void)?=nil,fail:(()->Void)?=nil){
     
         NewAPI.nsConGet(nid: "\(nid)") { (data, error) in
             
             let realm = try! Realm()
             
-            guard let da = data, let datas = da.objectForKey("data") as? NSDictionary else{  fail?();return}
+            guard let da = data, let datas = da.object(forKey: "data") as? NSDictionary else{  fail?();return}
             
             try! realm.write({
                 
@@ -117,14 +126,14 @@ public extension NewAPI{
             
             let newContengt = realm.objects(NewContent.self).filter("nid = \(nid)").first
             
-            finish?(newCon: newContengt!)
+            finish?(newContengt!)
         }
     }
 }
 
 
 
-public class NewAPI: APIBase {
+class NewAPI {
 
     
     /**
@@ -137,12 +146,29 @@ public class NewAPI: APIBase {
      - parameter c: (query) 条数 (optional, default to 20)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func nsFedRGet(cid cid: String, tcr: String, tmk: String? = "0", p: String? = nil, c: String? = nil, completion: ((data: AnyObject?, error: ErrorType?) -> Void)) {
+    class func nsFedRGet(cid: String, tcr: String, tmk: String? = "0", p: String? = nil, c: String? = nil, completion: @escaping ((_ data: AnyObject?, _ error: Swift.Error?) -> Void)) {
         ShareLUser.getSdkUserToken { (token) in
-            let budlier = nsFedRGetWithRequestBuilder(cid: cid, tcr: tcr, tmk: tmk, p: p, c: c).addHeaders(["Authorization":token])
-            budlier.execute { (response, error) -> Void in
-                completion(data: response?.body, error: error);
-            }
+            
+            let path = "/ns/fed/rn"
+            let URLString = SimpleRequest.basePath + path
+            
+            let nillableParameters: [String:AnyObject?] = [
+                "cid": cid as Optional<AnyObject>,
+                "tcr": tcr as Optional<AnyObject>,
+                "tmk": tmk as Optional<AnyObject>,
+                "p": p as Optional<AnyObject>,
+                "c": c as Optional<AnyObject>,
+                "uid": "\(ShareLUser.uid)" as Optional<AnyObject>
+            ]
+            
+            let parameters = APIHelper.rejectNil(nillableParameters)
+            
+            let convertedParameters = APIHelper.convertBoolToString(parameters)
+            
+            var request = SimpleRequest.budileRequest(URLString, method: .get, parameters: convertedParameters, encoding: URLEncoding.default, headers: ["Authorization":token]).request(completionHandler: { (data, _, _) in
+                
+                completion(data as AnyObject?, nil)
+            })
         }
     }
     
@@ -156,12 +182,28 @@ public class NewAPI: APIBase {
      - parameter c: (query) 条数 (optional, default to 20)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func nsFedLGet(cid cid: String, tcr: String, tmk: String? = "0", p: String? = nil, c: String? = nil, completion: ((data: AnyObject?, error: ErrorType?) -> Void)) {
+    class func nsFedLGet(cid: String, tcr: String, tmk: String? = "0", p: String? = nil, c: String? = nil, completion: @escaping ((_ data: AnyObject?, _ error: Swift.Error?) -> Void)) {
         ShareLUser.getSdkUserToken { (token) in
-            let budlier = nsFedLGetWithRequestBuilder(cid: cid, tcr: tcr, tmk: tmk, p: p, c: c).addHeaders(["Authorization":token])
-            budlier.execute { (response, error) -> Void in
-                completion(data: response?.body, error: error);
-            }
+            
+            let path = "/ns/fed/ln"
+            let URLString = SimpleRequest.basePath + path
+            
+            let nillableParameters: [String:AnyObject?] = [
+                "cid": cid as Optional<AnyObject>,
+                "tcr": tcr as Optional<AnyObject>,
+                "tmk": tmk as Optional<AnyObject>,
+                "p": p as Optional<AnyObject>,
+                "c": c as Optional<AnyObject>,
+                "uid": "\(ShareLUser.uid)" as Optional<AnyObject>
+            ]
+            
+            let parameters = APIHelper.rejectNil(nillableParameters)
+            
+            let convertedParameters = APIHelper.convertBoolToString(parameters)
+            
+            SimpleRequest.budileRequest(URLString, method: .get, parameters: convertedParameters, encoding: URLEncoding.default, headers: ["Authorization":token]).request(completionHandler: { (data, _, _) in
+                completion(data as AnyObject?, nil)
+            })
         }
     }
     
@@ -172,112 +214,22 @@ public class NewAPI: APIBase {
      - parameter nid: (query) 新闻ID 
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func nsConGet(nid nid: String, completion: ((data: AnyObject?, error: ErrorType?) -> Void)) {
-        nsConGetWithRequestBuilder(nid: nid).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
-        }
-    }
-
-
-    /**
-     新闻详情页
-     - GET /ns/con
-     - 从服务器获取 新闻详情页
-     - examples: [{contentType=application/json, example="{}"}]
-     
-     - parameter nid: (query) 新闻ID 
-
-     - returns: RequestBuilder<AnyObject> 
-     */
-    public class func nsConGetWithRequestBuilder(nid nid: String) -> RequestBuilder<AnyObject> {
+    class func nsConGet(nid: String, completion: @escaping ((_ data: AnyObject?, _ error: Swift.Error?) -> Void)) {
         let path = "/ns/con"
-        let URLString = SwaggerClientAPI.basePath + path
-
+        let URLString = SimpleRequest.basePath + path
+        
         let nillableParameters: [String:AnyObject?] = [
-            "nid": nid
+            "nid": nid as Optional<AnyObject>
         ]
- 
+        
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+        
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
-        let requestBuilder: RequestBuilder<AnyObject>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
+        
+        SimpleRequest.budileRequest(URLString, method: .get, parameters: convertedParameters, encoding: URLEncoding.default, headers:nil).request(completionHandler: { (data, _, _) in
+            completion(data as AnyObject?, nil)
+        })
     }
-
-    /**
-     新闻列表页加载
-     - GET /ns/fed/l
-     - 从服务器获取 新闻-列表页加载
-     - examples: [{contentType=application/json, example="{}"}]
-     
-     - parameter cid: (query) 频道id 
-     - parameter tcr: (query) 起始时间，13位时间戳 
-     - parameter tmk: (query) 是(1)否(0)模拟实时发布时间(部分新闻的发布时间修改为5分钟以内) (optional, default to 1)
-     - parameter p: (query) 页数 (optional, default to 1)
-     - parameter c: (query) 条数 (optional, default to 20)
-
-     - returns: RequestBuilder<AnyObject> 
-     */
-    public class func nsFedLGetWithRequestBuilder(cid cid: String, tcr: String, tmk: String? = nil, p: String? = nil, c: String? = nil, uid: String? = "\(ShareLUser.uid)") -> RequestBuilder<AnyObject> {
-        let path = "/ns/fed/ln"
-        let URLString = SwaggerClientAPI.basePath + path
-
-        let nillableParameters: [String:AnyObject?] = [
-            "cid": cid,
-            "tcr": tcr,
-            "tmk": tmk,
-            "p": p,
-            "c": c,
-            "uid":uid
-        ]
- 
-        let parameters = APIHelper.rejectNil(nillableParameters)
- 
-        let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
-        let requestBuilder: RequestBuilder<AnyObject>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
-    }
-
-    /**
-     新闻列表页刷新
-     - GET /ns/fed/r
-     - 从服务器获取 新闻-列表页刷新
-     - examples: [{contentType=application/json, example="{}"}]
-     
-     - parameter cid: (query) 频道id 
-     - parameter tcr: (query) 起始时间，13位时间戳 
-     - parameter tmk: (query) 是(1)否(0)模拟实时发布时间(部分新闻的发布时间修改为5分钟以内) (optional, default to 1)
-     - parameter p: (query) 页数 (optional, default to 1)
-     - parameter c: (query) 条数 (optional, default to 20)
-
-     - returns: RequestBuilder<AnyObject> 
-     */
-    public class func nsFedRGetWithRequestBuilder(cid cid: String, tcr: String, tmk: String? = nil, p: String? = nil, c: String? = nil,uid: String? = "\(ShareLUser.uid)") -> RequestBuilder<AnyObject> {
-        let path = "/ns/fed/rn"
-        let URLString = SwaggerClientAPI.basePath + path
-
-        let nillableParameters: [String:AnyObject?] = [
-            "cid": cid,
-            "tcr": tcr,
-            "tmk": tmk,
-            "p": p,
-            "c": c,
-            "uid":uid
-        ]
- 
-        let parameters = APIHelper.rejectNil(nillableParameters)
- 
-        let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
-        let requestBuilder: RequestBuilder<AnyObject>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
-    }
-
 }
 
 
@@ -285,22 +237,22 @@ public class NewAPI: APIBase {
 private extension NewAPI{
 
     // 完善新闻事件
-    class func AnalysisPutTimeAndImageList(cid: Int,channel:NSDictionary,realm:Realm,ishot:Int=0){
+    class func AnalysisPutTimeAndImageList(_ cid: Int,channel:NSDictionary,realm:Realm,ishot:Int=0){
         
-        guard let nid = channel.objectForKey("nid") as? Int else { return }
+        guard let nid = channel.object(forKey: "nid") as? Int else { return }
         
-        if let pubTime = channel.objectForKey("ptime") as? String {
+        if let pubTime = channel.object(forKey: "ptime") as? String {
             
-            let date = NSDate(fromString: pubTime, format: DateFormat.Custom("yyyy-MM-dd HH:mm:ss"))
+            let date = Date(fromString: pubTime, format: DateFormat.custom("yyyy-MM-dd HH:mm:ss"))
             
             realm.create(New.self, value: ["nid":nid,"ptimes":date], update: true)
         }
         
-        if let imageList = channel.objectForKey("imgs") as? NSArray {
+        if let imageList = channel.object(forKey: "imgs") as? NSArray {
             
             var array = [StringObject]()
             
-            imageList.enumerateObjectsUsingBlock({ (imageUrl, _, _) in
+            imageList.enumerateObjects({ (imageUrl, _, _) in
                 
                 let sp = StringObject()
                 sp.value = imageUrl as! String
@@ -310,9 +262,7 @@ private extension NewAPI{
             realm.create(New.self, value: ["nid":nid,"imgsList":array], update: true)
         }
         
-        let realm = try! Realm()
-        
-        if let new = realm.objectForPrimaryKey(New.self, key: nid) {
+        if let new = realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject) {
             
             if let intObj = new.channelList.filter("channel = %@",cid).first { } else {
             
@@ -321,7 +271,6 @@ private extension NewAPI{
                 new.channelList.append(sp)
             }
         }
-        
         
         realm.create(New.self, value: ["nid":nid,"ishotnew":ishot], update: true)
     }
@@ -332,15 +281,15 @@ private extension NewAPI{
      - parameter channel: <#channel description#>
      - parameter realm:   <#realm description#>
      */
-    private class func AnalysisNewContents(channel:NSDictionary,realm:Realm){
+    class func AnalysisNewContents(_ channel:NSDictionary,realm:Realm){
         
-        if let nid = channel.objectForKey("nid") as? Int {
+        if let nid = channel.object(forKey: "nid") as? Int {
             
-            if let imageList = channel.objectForKey("tags") as? NSArray {
+            if let imageList = channel.object(forKey: "tags") as? NSArray {
                 
                 var array = [StringObject]()
                 
-                imageList.enumerateObjectsUsingBlock({ (imageUrl, _, _) in
+                imageList.enumerateObjects({ (imageUrl, _, _) in
                     
                     let sp = StringObject()
                     sp.value = imageUrl as! String
@@ -353,10 +302,10 @@ private extension NewAPI{
     }
 }
 
-private extension NSDate{
+private extension Date{
     
     /// 当前时间的 UNix 时间戳
-    private class var unixTimeString:String{ return "\(Int64(NSDate().timeIntervalSince1970*1000))" }
+    static var unixTimeString:String{ return "\(Int64(Date().timeIntervalSince1970*1000))" }
 }
 
 private extension New{
@@ -367,9 +316,9 @@ private extension New{
      - parameter cid:   频道ID
      - parameter realm: 数据库操作对象
      */
-    private class func DeleteBecTooMore(delete:Bool = false,cid:Int,realm:Realm) -> Int{
+    class func DeleteBecTooMore(_ delete:Bool = false,cid:Int,realm:Realm) -> Int{
         
-        var objects = realm.objects(New).sorted("ptimes", ascending: false)
+        var objects = realm.objects(New.self).sorted(byProperty: "ptimes", ascending: false)
         
         if cid == 1 {
             
@@ -385,7 +334,7 @@ private extension New{
             
                 if cid == 1 {
                     
-                    let willDel = realm.objects(New).filter("ptimes < %@ AND ishotnew = 1", objects[15].ptimes)
+                    let willDel = realm.objects(New.self).filter("ptimes < %@ AND ishotnew = 1", objects[15].ptimes)
                     
                     for new in willDel {
                     
@@ -393,7 +342,7 @@ private extension New{
                     }
                 }else{
                     
-                    let willDel = realm.objects(New).filter("ptimes < %@ AND ishotnew = 0", objects[15].ptimes)
+                    let willDel = realm.objects(New.self).filter("ptimes < %@ AND ishotnew = 0", objects[15].ptimes)
                     
                     for new in willDel {
                         
@@ -416,7 +365,7 @@ private extension New{
      - parameter cid:   频道ID
      - parameter realm: 数据库操作对象
      */
-    private class func DeleteIdentification(cid:Int,realm:Realm){
+    class func DeleteIdentification(_ cid:Int,realm:Realm){
         
         try! realm.write({
             
@@ -437,9 +386,9 @@ private extension New{
      - parameter cid:   频道ID
      - parameter realm: 数据库操作对象
      */
-    private class func CreateIdentification(tcr:String,cid:Int,realm:Realm){
+    class func CreateIdentification(_ tcr:String,cid:Int,realm:Realm){
         
-        let date = NSDate(timeIntervalSince1970: ((tcr as NSString).doubleValue+1)/1000)
+        let date = Date(timeIntervalSince1970: ((tcr as NSString).doubleValue+1)/1000)
         
         let nid = cid == 1 ? -100 : -cid
         

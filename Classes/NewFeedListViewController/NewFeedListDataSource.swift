@@ -9,104 +9,107 @@
 import UIKit
 import PINCache
 
-
-/// 属性字符串 缓存器
-class TableViewHeightCached {
-    
-    lazy var cache = PINMemoryCache()
-    
-    class var sharedHeightCached:TableViewHeightCached!{
-        get{
-            struct backTaskLeton{
-                static var predicate:dispatch_once_t = 0
-                static var instance:TableViewHeightCached? = nil
-            }
-            dispatch_once(&backTaskLeton.predicate, { () -> Void in
-                backTaskLeton.instance = TableViewHeightCached()
-            })
-            return backTaskLeton.instance
-        }
-    }
-    
-    func cacheHeight(nid : Int,height:CGFloat){
-    
-        self.cache.setObject(height, forKey: "\(nid)")
-    }
-    
-    /**
-     根据提供的 title 字符串 （title 针对于频道时唯一的，可以当作唯一标识来使用）在缓存中获取UIViewController
-     
-     - parameter string: 原本 字符串
-     - parameter font:   字体 对象 默认为 系统2号字体
-     
-     - returns: 返回属性字符串
-     */
-    func heightForNewNID(nid : Int ) -> CGFloat {
-        
-//        if let channelViewController = self.cache.objectForKey(nid) as? CG { return channelViewController }
-//        
-//        let channelViewController = getDisplayViewController(channel.cname)
-//        
-//        channelViewController.channel = channel
-//        
-//        if channel.id == 1{
-//            
-//            channelViewController.newsResults = New.allArray().filter("ishotnew = 1 AND isdelete = 0")
-//        }else{
-//            
-//            channelViewController.newsResults = New.allArray().filter("(ANY channelList.channel = %@ AND isdelete = 0 ) OR ( channel = %@ AND isidentification = 1 )",channel.id,channel.id)
+//
+///// 属性字符串 缓存器
+//class TableViewHeightCached {
+//    
+//    
+//    private static var __once: () = { () -> Void in
+//                backTaskLeton.instance = TableViewHeightCached()
+//            }()
+//    
+//    lazy var cache = PINMemoryCache()
+//    
+//    class var sharedHeightCached:TableViewHeightCached!{
+//        get{
+//            struct backTaskLeton{
+//                static var predicate:Int = 0
+//                static var instance:TableViewHeightCached? = nil
+//            }
+//            _ = TableViewHeightCached.__once
+//            return backTaskLeton.instance
 //        }
+//    }
+//    
+//    func cacheHeight(_ nid : Int,height:CGFloat){
+//    
+//        self.cache.setObject(height, forKey: "\(nid)")
+//    }
+//    
+//    /**
+//     根据提供的 title 字符串 （title 针对于频道时唯一的，可以当作唯一标识来使用）在缓存中获取UIViewController
+//     
+//     - parameter string: 原本 字符串
+//     - parameter font:   字体 对象 默认为 系统2号字体
+//     
+//     - returns: 返回属性字符串
+//     */
+//    func heightForNewNID(_ nid : Int ) -> CGFloat {
 //        
-//        self.cache.setObject(channelViewController, forKey: channel.cname)
-        
-        return self.cache.objectForKey("\(nid)") as? CGFloat ?? -1
-    }
-}
+////        if let channelViewController = self.cache.objectForKey(nid) as? CG { return channelViewController }
+////        
+////        let channelViewController = getDisplayViewController(channel.cname)
+////        
+////        channelViewController.channel = channel
+////        
+////        if channel.id == 1{
+////            
+////            channelViewController.newsResults = New.allArray().filter("ishotnew = 1 AND isdelete = 0")
+////        }else{
+////            
+////            channelViewController.newsResults = New.allArray().filter("(ANY channelList.channel = %@ AND isdelete = 0 ) OR ( channel = %@ AND isidentification = 1 )",channel.id,channel.id)
+////        }
+////        
+////        self.cache.setObject(channelViewController, forKey: channel.cname)
+//        
+//        return self.cache.object(forKey: "\(nid)") as? CGFloat ?? -1
+//    }
+//}
 
 
 
 extension NewFeedListViewController:UITableViewDataSource{
     
     
-    private func getTableViewCell(indexPath : NSIndexPath) -> UITableViewCell{
+    fileprivate func getTableViewCell(_ indexPath : IndexPath) -> UITableViewCell{
     
         var cell :NewBaseTableViewCell!
         
-        let new = newsResults[indexPath.row]
+        let new = newsResults[(indexPath as NSIndexPath).row]
         
         if new.isidentification == 1 {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier("refreshcell")! as UITableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "refreshcell")! as UITableViewCell
             
             return cell
         }
         
         if new.style == 0 {
             
-            cell =  tableView.dequeueReusableCellWithIdentifier("NewNormalTableViewCell") as! NewNormalTableViewCell
+            cell =  tableView.dequeueReusableCell(withIdentifier: "NewNormalTableViewCell") as! NewNormalTableViewCell
             
             cell.setNewObject(new)
             
         }else if new.style == 1 {
             
-            cell =  tableView.dequeueReusableCellWithIdentifier("NewOneTableViewCell") as! NewOneTableViewCell
+            cell =  tableView.dequeueReusableCell(withIdentifier: "NewOneTableViewCell") as! NewOneTableViewCell
             
             cell.setNewObject(new)
             
         }else if new.style == 2 {
             
-            cell =  tableView.dequeueReusableCellWithIdentifier("NewTwoTableViewCell") as! NewTwoTableViewCell
+            cell =  tableView.dequeueReusableCell(withIdentifier: "NewTwoTableViewCell") as! NewTwoTableViewCell
             
             cell.setNewObject(new)
             
         }else if new.style == 3 {
             
-            cell =  tableView.dequeueReusableCellWithIdentifier("NewThreeTableViewCell") as! NewThreeTableViewCell
+            cell =  tableView.dequeueReusableCell(withIdentifier: "NewThreeTableViewCell") as! NewThreeTableViewCell
             
             cell.setNewObject(new)
         }else{
             
-            cell = tableView.dequeueReusableCellWithIdentifier("NewTwoTableViewCell") as! NewTwoTableViewCell
+            cell = tableView.dequeueReusableCell(withIdentifier: "NewTwoTableViewCell") as! NewTwoTableViewCell
             
             switch new.style-10 {
             case 1:
@@ -118,8 +121,8 @@ extension NewFeedListViewController:UITableViewDataSource{
             }
         }
         
-        cell.noLikeButton.removeActions(UIControlEvents.TouchUpInside)
-        cell.noLikeButton.addAction(UIControlEvents.TouchUpInside) { (_) in
+        cell.noLikeButton.removeActions(events: UIControlEvents.touchUpInside)
+        cell.noLikeButton.addAction(events: UIControlEvents.touchUpInside) { (_) in
             
             self.handleActionMethod(cell, indexPath: indexPath)
         }
@@ -145,7 +148,7 @@ extension NewFeedListViewController:UITableViewDataSource{
      
      - returns: 新闻的个数
      */
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return newsResults.count
     }
@@ -160,7 +163,7 @@ extension NewFeedListViewController:UITableViewDataSource{
      
      - returns: 返回新闻的具体战士杨视图
      */
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         return self.getTableViewCell(indexPath)
     }
@@ -176,17 +179,17 @@ extension NewFeedListViewController:UITableViewDataSource{
      - parameter cell:      返回被点击的cell
      - parameter indexPath: 被点击的位置
      */
-    private func handleActionMethod(cell :NewBaseTableViewCell,indexPath:NSIndexPath){
+    fileprivate func handleActionMethod(_ cell :NewBaseTableViewCell,indexPath:IndexPath){
         
         var delayInSeconds = 0.0
         
-        let porint = cell.convertRect(cell.bounds, toView: self.view).origin
+        let porint = cell.convert(cell.bounds, to: self.view).origin
         
         if porint.y < 0 {
             
             delayInSeconds = 0.5
             
-            self.tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+            self.tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
         }
         
         let needHeight = porint.y+cell.frame.height+128
@@ -202,14 +205,14 @@ extension NewFeedListViewController:UITableViewDataSource{
             self.tableView.setContentOffset(toPoint, animated: true)
         }
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(delayInSeconds * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(delayInSeconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { // 2
             self.delegate.ClickNoLikeButtonOfUITableViewCell?(cell, finish: { (cancel) in
                 
                 if !cancel {
                     
-                    self.newsResults[indexPath.row].suicide()
+                    self.newsResults[(indexPath as NSIndexPath).row].suicide()
                     
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { // 2
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { // 2
                         
                         self.showNoInterest()
                         
@@ -236,9 +239,9 @@ extension NewFeedListViewController:UITableViewDelegate{
      - parameter tableView: tableview 对象
      - parameter indexPath: 点击的indexPath
      */
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let new = newsResults[indexPath.row]
+        let new = newsResults[(indexPath as NSIndexPath).row]
 
         if new.isidentification == 1 {
             
@@ -247,7 +250,7 @@ extension NewFeedListViewController:UITableViewDelegate{
         
         let viewController = OddityViewControllerManager.shareManager.getDetailAndCommitViewController(new)
         
-        self.showViewController(viewController, sender: nil)
+        self.show(viewController, sender: nil)
         
         if new.isread == 0 {
             

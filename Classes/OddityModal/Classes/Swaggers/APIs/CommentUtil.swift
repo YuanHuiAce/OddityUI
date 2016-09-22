@@ -7,10 +7,9 @@
 //
 
 import RealmSwift
-import AFDateHelper
 
 extension New{
-
+    
     /**
      将 新闻的 评论 url进行 base64 加密。处理
      
@@ -18,9 +17,9 @@ extension New{
      */
     func docidBase64() -> String{
         
-        if let plainData = self.docid.dataUsingEncoding(NSUTF8StringEncoding){
+        if let plainData = self.docid.data(using: String.Encoding.utf8){
             
-            return plainData.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.init(rawValue: 0))
+            return plainData.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
         }
         
         return ""
@@ -28,46 +27,50 @@ extension New{
 }
 
 
-public class CommentUtil: NSObject {
-
+open class CommentUtil: NSObject {
+    
     /// 获取普通评论列表
-    public class func LoadNoramlCommentsList(new:New,p: String?="1", c: String?="20",finish:((count:Int)->Void)?=nil,fail:(()->Void)?=nil) {
+    open class func LoadNoramlCommentsList(_ new:New,p: String?="1", c: String?="20",finish:((_ count:Int)->Void)?=nil,fail:(()->Void)?=nil) {
         
         CommentAPI.nsComsCGet(did: new.docidBase64(), uid: "\(ShareLUser.uid)", p: p, c: c) { (datas, error) in
             
-            if let code = datas?.objectForKey("code") as? Int{
+            if let code = datas?.object(forKey: "code") as? Int{
                 if code == 2002 {
-                    finish?(count: 0)
+                    finish?(0)
                     return
                 }
             }
-            guard let da = datas,let data = da.objectForKey("data") as? NSArray else{ fail?();return}
+            guard let da = datas,let data = da.object(forKey: "data") as? NSArray else{ fail?();return}
+            
+            let newid = new.nid
             
             let realm = try! Realm()
             try! realm.write({
                 for channel in data {
                     realm.create(Comment.self, value: channel, update: true)
-                    self.AnalysisComment(channel as! NSDictionary, realm: realm,new:new)
+                    self.AnalysisComment(channel as! NSDictionary, realm: realm,new: newid)
                 }
             })
-            finish?(count: data.count)
+            finish?(data.count)
         }
     }
     
     /// 获取热门评论列表
-    public class func LoadHotsCommentsList(new:New,finish:(()->Void)?=nil,fail:(()->Void)?=nil) {
+    open class func LoadHotsCommentsList(_ new:New,finish:(()->Void)?=nil,fail:(()->Void)?=nil) {
         
         CommentAPI.nsComsHGet(did: new.docidBase64(), uid: "\(ShareLUser.uid)") { (datas, error) in
             
-            guard let da = datas,let data = da.objectForKey("data") as? NSArray else{ fail?();return}
+            guard let da = datas,let data = da.object(forKey: "data") as? NSArray else{ fail?();return}
+            
+            let newid = new.nid
             
             let realm = try! Realm()
             try! realm.write({
                 for channel in data {
                     
                     realm.create(Comment.self, value: channel, update: true)
-                    self.AnalysisComment(channel as! NSDictionary, realm: realm,new:new)
-                    if let nid = channel.objectForKey("id") as? Int {
+                    self.AnalysisComment(channel as! NSDictionary, realm: realm,new : newid)
+                    if let nid = (channel as AnyObject).object(forKey: "id") as? Int {
                         realm.create(Comment.self, value: ["id":nid,"ishot":1], update: true)
                     }
                 }
@@ -81,18 +84,18 @@ public class CommentUtil: NSObject {
 
 extension CommentUtil{
     // 完善评论对象
-    private class func AnalysisComment(channel:NSDictionary,realm:Realm,new:New){
+    fileprivate class func AnalysisComment(_ channel:NSDictionary,realm:Realm,new:Int){
         
-        if let nid = channel.objectForKey("id") as? Int {
+        if let nid = channel.object(forKey: "id") as? Int {
             
-            var date = NSDate()
+            var date = Date()
             
-            if let pubTime = channel.objectForKey("ctime") as? String {
+            if let pubTime = channel.object(forKey: "ctime") as? String {
                 
-                date = NSDate(fromString: pubTime, format: DateFormat.Custom("yyyy-MM-dd HH:mm:ss"))
+                date = Date(fromString: pubTime, format: DateFormat.custom("yyyy-MM-dd HH:mm:ss"))
             }
             
-            realm.create(Comment.self, value: ["id":nid,"nid":new.nid,"ctimes":date], update: true)
+            realm.create(Comment.self, value: ["id":nid,"nid":new,"ctimes":date], update: true)
         }
     }
 }

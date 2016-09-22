@@ -9,7 +9,7 @@
 import UIKit
 import XLPagerTabStrip
 
-public class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripViewController,UICollectionViewDelegateFlowLayout{
+open class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripViewController{
 
     /**
      设置每一个Cell的大小。需要讲高度设置为只能允许一行的高度，否则！！  哼哼 你自己试试吧，，超级刺激的额。
@@ -20,26 +20,25 @@ public class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStrip
      
      - returns: <#return value description#>
      */
-    public override func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-
-        let childController = viewControllers[indexPath.item] as! IndicatorInfoProvider
-        
-        let indicatorInfo = childController.indicatorInfoForPagerTabStrip(self)
-        
-        let size = CGSize(width: 500, height: 200)
-        
-        let returnSize = NSString(string:indicatorInfo.title).boundingRectWithSize(size, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)], context: nil).size
-   
-        // 修复当频道调整后出现两行的情况
-        return CGSize(width: returnSize.width+(returnSize.width/2), height: collectionView.frame.height-10)
+//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//    
+//        let childController = viewControllers[(indexPath as NSIndexPath).item] as! IndicatorInfoProvider
+//        
+//        let indicatorInfo = childController.indicatorInfo(for: self)
+//        
+//        let size = CGSize(width: 500, height: 200)
+//        
+//        let returnSize = NSString(string:indicatorInfo.title).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)], context: nil).size
+//        
+////         修复当频道调整后出现两行的情况
+//        return CGSize(width: returnSize.width+(returnSize.width/2), height: collectionView.frame.height-10)
+//    }
     
-    }
-    
-    override public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let cell = super.collectionView(collectionView, cellForItemAtIndexPath: indexPath) as? ButtonBarViewCell else {
+        guard let cell = super.collectionView(collectionView, cellForItemAt: indexPath) as? ButtonBarViewCell else {
             
-            return super.collectionView(collectionView, cellForItemAtIndexPath: indexPath)
+            return super.collectionView(collectionView, cellForItemAt: indexPath)
         }
         
         cell.label.font = UIFont.a_font3_1
@@ -47,21 +46,21 @@ public class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStrip
         return cell
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat{
+    open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat{
         
         return 5
     }
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+    open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
     
         return UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
     }
 }
 
-public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
+open class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
 
-    public lazy var selectedBar: UIView = { [unowned self] in
-        let bar  = UIView(frame: CGRectMake(0, self.frame.size.height - CGFloat(self.selectedBarHeight), 0, 24))
+    open lazy var selectedBar: UIView = { [unowned self] in
+        let bar  = UIView(frame: CGRect(x: 0, y: self.frame.size.height - CGFloat(self.selectedBarHeight), width: 0, height: 24))
         bar.layer.zPosition = -10
         bar.layer.cornerRadius = 12
         return bar
@@ -72,7 +71,7 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
             self.updateSlectedBarYPosition()
         }
     }
-    var selectedBarAlignment: SelectedBarAlignment = .Center
+    var selectedBarAlignment: SelectedBarAlignment = .center
     var selectedIndex = 0
     
     required public init?(coder aDecoder: NSCoder) {
@@ -85,31 +84,31 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
         addSubview(selectedBar)
     }
 
-    public func moveToIndex(toIndex: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
+    open func moveToIndex(_ toIndex: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
         selectedIndex = toIndex
         updateSelectedBarPosition(animated, swipeDirection: swipeDirection, pagerScroll: pagerScroll)
     }
     
-    public func moveFromIndex(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
+    open func moveFromIndex(_ fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
         
-        let fromFrame = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: fromIndex, inSection: 0))!.frame
+        let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
         let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
         
         var toFrame: CGRect
         
         if toIndex < 0 || toIndex > numberOfItems - 1 {
             if toIndex < 0 {
-                let cellAtts = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0))
-                toFrame = CGRectOffset(cellAtts!.frame, -cellAtts!.frame.size.width, 0)
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0))
+                toFrame = cellAtts!.frame.offsetBy(dx: -cellAtts!.frame.size.width, dy: 0)
             }
             else {
-                let cellAtts = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: (numberOfItems - 1), inSection: 0))
-                toFrame = CGRectOffset(cellAtts!.frame, cellAtts!.frame.size.width, 0)
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0))
+                toFrame = cellAtts!.frame.offsetBy(dx: cellAtts!.frame.size.width, dy: 0)
             }
         }
         else {
-            toFrame = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: toIndex, inSection: 0))!.frame
+            toFrame = layoutAttributesForItem(at: IndexPath(item: toIndex, section: 0))!.frame
         }
         
         var targetFrame = fromFrame
@@ -117,7 +116,7 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
         targetFrame.size.width += (toFrame.size.width - fromFrame.size.width) * progressPercentage
         targetFrame.origin.x += (toFrame.origin.x - fromFrame.origin.x) * progressPercentage
         
-        selectedBar.frame = CGRectMake(targetFrame.origin.x, selectedBar.frame.origin.y, targetFrame.size.width, selectedBar.frame.size.height)
+        selectedBar.frame = CGRect(x: targetFrame.origin.x, y: selectedBar.frame.origin.y, width: targetFrame.size.width, height: selectedBar.frame.size.height)
         
         var targetContentOffset: CGFloat = 0.0
         if contentSize.width > frame.size.width {
@@ -128,25 +127,25 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
         }
         
         let animated = abs(contentOffset.x - targetContentOffset) > 30 || (fromIndex == toIndex)
-        setContentOffset(CGPointMake(targetContentOffset, 0), animated: animated)
+        setContentOffset(CGPoint(x: targetContentOffset, y: 0), animated: animated)
     }
     
-    public func updateSelectedBarPosition(animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) -> Void {
+    open func updateSelectedBarPosition(_ animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) -> Void {
         
         var selectedBarFrame = selectedBar.frame
         
-        let selectedCellIndexPath = NSIndexPath(forItem: selectedIndex, inSection: 0)
-        let attributes = layoutAttributesForItemAtIndexPath(selectedCellIndexPath)
+        let selectedCellIndexPath = IndexPath(item: selectedIndex, section: 0)
+        let attributes = layoutAttributesForItem(at: selectedCellIndexPath)
         let selectedCellFrame = attributes!.frame
         
-        updateContentOffset(animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: selectedCellIndexPath.row)
+        updateContentOffset(animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: (selectedCellIndexPath as NSIndexPath).row)
         
         selectedBarFrame.size.width = selectedCellFrame.size.width
         selectedBarFrame.size.height = 24
         selectedBarFrame.origin.x = selectedCellFrame.origin.x
         
         if animated {
-            UIView.animateWithDuration(0.3, animations: { [weak self] in
+            UIView.animate(withDuration: 0.3, animations: { [weak self] in
                 self?.selectedBar.frame = selectedBarFrame
                 })
         }
@@ -157,24 +156,24 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
     
     // MARK: - Helpers
     
-    private func updateContentOffset(animated: Bool, pagerScroll: PagerScroll, toFrame: CGRect, toIndex: Int) -> Void {
-        guard pagerScroll != .No || (pagerScroll != .ScrollOnlyIfOutOfScreen && (toFrame.origin.x < contentOffset.x || toFrame.origin.x >= (contentOffset.x + frame.size.width - contentInset.left))) else { return }
+    fileprivate func updateContentOffset(_ animated: Bool, pagerScroll: PagerScroll, toFrame: CGRect, toIndex: Int) -> Void {
+        guard pagerScroll != .no || (pagerScroll != .scrollOnlyIfOutOfScreen && (toFrame.origin.x < contentOffset.x || toFrame.origin.x >= (contentOffset.x + frame.size.width - contentInset.left))) else { return }
         let targetContentOffset = contentSize.width > frame.size.width ? contentOffsetForCell(withFrame: toFrame, andIndex: toIndex) : 0
-        setContentOffset(CGPointMake(targetContentOffset, 0), animated: animated)
+        setContentOffset(CGPoint(x: targetContentOffset, y: 0), animated: animated)
     }
     
-    private func contentOffsetForCell(withFrame cellFrame: CGRect, andIndex index: Int) -> CGFloat {
+    fileprivate func contentOffsetForCell(withFrame cellFrame: CGRect, andIndex index: Int) -> CGFloat {
         let sectionInset = (collectionViewLayout as! UICollectionViewFlowLayout).sectionInset
         var alignmentOffset: CGFloat = 0.0
         
         switch selectedBarAlignment {
-        case .Left:
+        case .left:
             alignmentOffset = sectionInset.left
-        case .Right:
+        case .right:
             alignmentOffset = frame.size.width - sectionInset.right - cellFrame.size.width
-        case .Center:
+        case .center:
             alignmentOffset = (frame.size.width - cellFrame.size.width) * 0.5
-        case .Progressive:
+        case .progressive:
             let cellHalfWidth = cellFrame.size.width * 0.5
             let leftAlignmentOffset = sectionInset.left + cellHalfWidth
             let rightAlignmentOffset = frame.size.width - sectionInset.right - cellHalfWidth
@@ -189,7 +188,7 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
         return contentOffset
     }
     
-    private func updateSlectedBarYPosition() {
+    fileprivate func updateSlectedBarYPosition() {
         var selectedBarFrame = selectedBar.frame
         selectedBarFrame.origin.y = (44-24)/2
         selectedBarFrame.size.height = 24
@@ -199,10 +198,10 @@ public class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
 
 
 
-public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
+open class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
     
-    public lazy var selectedBar: UIView = { [unowned self] in
-        let bar  = UIView(frame: CGRectMake(0, self.frame.size.height - CGFloat(self.selectedBarHeight), 0, CGFloat(self.selectedBarHeight)))
+    open lazy var selectedBar: UIView = { [unowned self] in
+        let bar  = UIView(frame: CGRect(x: 0, y: self.frame.size.height - CGFloat(self.selectedBarHeight), width: 0, height: CGFloat(self.selectedBarHeight)))
         bar.layer.zPosition = 9999
         return bar
         }()
@@ -212,7 +211,7 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
             self.updateSlectedBarYPosition()
         }
     }
-    var selectedBarAlignment: SelectedBarAlignment = .Center
+    var selectedBarAlignment: SelectedBarAlignment = .center
     var selectedIndex = 0
     
     required public init?(coder aDecoder: NSCoder) {
@@ -225,31 +224,31 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
         addSubview(selectedBar)
     }
     
-    public func moveToIndex(toIndex: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
+    open func moveToIndex(_ toIndex: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
         selectedIndex = toIndex
         updateSelectedBarPosition(animated, swipeDirection: swipeDirection, pagerScroll: pagerScroll)
     }
     
-    public func moveFromIndex(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
+    open func moveFromIndex(_ fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
         
-        let fromFrame = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: fromIndex, inSection: 0))!.frame
+        let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
         let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
         
         var toFrame: CGRect
         
         if toIndex < 0 || toIndex > numberOfItems - 1 {
             if toIndex < 0 {
-                let cellAtts = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0))
-                toFrame = CGRectOffset(cellAtts!.frame, -cellAtts!.frame.size.width, 0)
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0))
+                toFrame = cellAtts!.frame.offsetBy(dx: -cellAtts!.frame.size.width, dy: 0)
             }
             else {
-                let cellAtts = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: (numberOfItems - 1), inSection: 0))
-                toFrame = CGRectOffset(cellAtts!.frame, cellAtts!.frame.size.width, 0)
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0))
+                toFrame = cellAtts!.frame.offsetBy(dx: cellAtts!.frame.size.width, dy: 0)
             }
         }
         else {
-            toFrame = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: toIndex, inSection: 0))!.frame
+            toFrame = layoutAttributesForItem(at: IndexPath(item: toIndex, section: 0))!.frame
         }
         
         var targetFrame = fromFrame
@@ -257,7 +256,7 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
         targetFrame.size.width += (toFrame.size.width - fromFrame.size.width) * progressPercentage
         targetFrame.origin.x += (toFrame.origin.x - fromFrame.origin.x) * progressPercentage
         
-        selectedBar.frame = CGRectMake(targetFrame.origin.x, selectedBar.frame.origin.y, targetFrame.size.width, selectedBar.frame.size.height)
+        selectedBar.frame = CGRect(x: targetFrame.origin.x, y: selectedBar.frame.origin.y, width: targetFrame.size.width, height: selectedBar.frame.size.height)
         
         var targetContentOffset: CGFloat = 0.0
         if contentSize.width > frame.size.width {
@@ -268,23 +267,23 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
         }
         
         let animated = abs(contentOffset.x - targetContentOffset) > 30 || (fromIndex == toIndex)
-        setContentOffset(CGPointMake(targetContentOffset, 0), animated: animated)
+        setContentOffset(CGPoint(x: targetContentOffset, y: 0), animated: animated)
     }
     
-    public func updateSelectedBarPosition(animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) -> Void {
+    open func updateSelectedBarPosition(_ animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) -> Void {
         var selectedBarFrame = selectedBar.frame
         
-        let selectedCellIndexPath = NSIndexPath(forItem: selectedIndex, inSection: 0)
-        let attributes = layoutAttributesForItemAtIndexPath(selectedCellIndexPath)
+        let selectedCellIndexPath = IndexPath(item: selectedIndex, section: 0)
+        let attributes = layoutAttributesForItem(at: selectedCellIndexPath)
         let selectedCellFrame = attributes!.frame
         
-        updateContentOffset(animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: selectedCellIndexPath.row)
+        updateContentOffset(animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: (selectedCellIndexPath as NSIndexPath).row)
         
         selectedBarFrame.size.width = selectedCellFrame.size.width
         selectedBarFrame.origin.x = selectedCellFrame.origin.x
         
         if animated {
-            UIView.animateWithDuration(0.3, animations: { [weak self] in
+            UIView.animate(withDuration: 0.3, animations: { [weak self] in
                 self?.selectedBar.frame = selectedBarFrame
                 })
         }
@@ -295,24 +294,24 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
     
     // MARK: - Helpers
     
-    private func updateContentOffset(animated: Bool, pagerScroll: PagerScroll, toFrame: CGRect, toIndex: Int) -> Void {
-        guard pagerScroll != .No || (pagerScroll != .ScrollOnlyIfOutOfScreen && (toFrame.origin.x < contentOffset.x || toFrame.origin.x >= (contentOffset.x + frame.size.width - contentInset.left))) else { return }
+    fileprivate func updateContentOffset(_ animated: Bool, pagerScroll: PagerScroll, toFrame: CGRect, toIndex: Int) -> Void {
+        guard pagerScroll != .no || (pagerScroll != .scrollOnlyIfOutOfScreen && (toFrame.origin.x < contentOffset.x || toFrame.origin.x >= (contentOffset.x + frame.size.width - contentInset.left))) else { return }
         let targetContentOffset = contentSize.width > frame.size.width ? contentOffsetForCell(withFrame: toFrame, andIndex: toIndex) : 0
-        setContentOffset(CGPointMake(targetContentOffset, 0), animated: animated)
+        setContentOffset(CGPoint(x: targetContentOffset, y: 0), animated: animated)
     }
     
-    private func contentOffsetForCell(withFrame cellFrame: CGRect, andIndex index: Int) -> CGFloat {
+    fileprivate func contentOffsetForCell(withFrame cellFrame: CGRect, andIndex index: Int) -> CGFloat {
         let sectionInset = (collectionViewLayout as! UICollectionViewFlowLayout).sectionInset
         var alignmentOffset: CGFloat = 0.0
         
         switch selectedBarAlignment {
-        case .Left:
+        case .left:
             alignmentOffset = sectionInset.left
-        case .Right:
+        case .right:
             alignmentOffset = frame.size.width - sectionInset.right - cellFrame.size.width
-        case .Center:
+        case .center:
             alignmentOffset = (frame.size.width - cellFrame.size.width) * 0.5
-        case .Progressive:
+        case .progressive:
             let cellHalfWidth = cellFrame.size.width * 0.5
             let leftAlignmentOffset = sectionInset.left + cellHalfWidth
             let rightAlignmentOffset = frame.size.width - sectionInset.right - cellHalfWidth
@@ -327,7 +326,7 @@ public class BottomLineButtonBarView: UICollectionView,UIScrollViewDelegate {
         return contentOffset
     }
     
-    private func updateSlectedBarYPosition() {
+    fileprivate func updateSlectedBarYPosition() {
         var selectedBarFrame = selectedBar.frame
         selectedBarFrame.origin.y = frame.size.height - selectedBarHeight
         selectedBarFrame.size.height = selectedBarHeight

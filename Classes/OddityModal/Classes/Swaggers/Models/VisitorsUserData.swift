@@ -8,15 +8,15 @@
 import Foundation
 
 
-public class VisitorsUserData: JSONEncodable {
+open class VisitorsUserData: JSONEncodable {
     /** 用户的类型 */
-    public var utype: Int32?
+    open var utype: Int32?
     /** 用户的id 唯一标示 */
-    public var uid: Int32?
+    open var uid: Int32?
     /** 用户的 token */
-    public var password: String?
+    open var password: String?
     /** 用户的频道列表 */
-    public var channel: [String]?
+    open var channel: [String]?
 
     public init() {}
 
@@ -25,9 +25,9 @@ public class VisitorsUserData: JSONEncodable {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["utype"] = self.utype?.encodeToJSON()
         nillableDictionary["uid"] = self.uid?.encodeToJSON()
-        nillableDictionary["password"] = self.password
-        nillableDictionary["channel"] = self.channel?.encodeToJSON()
+        nillableDictionary["password"] = self.password as AnyObject??
+//        nillableDictionary["channel"] = self.channel?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

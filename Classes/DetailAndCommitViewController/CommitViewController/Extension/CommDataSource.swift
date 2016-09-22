@@ -11,14 +11,14 @@ import UIKit
 
 extension CommitViewController{
 
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         
         return 0
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
-        guard let hot = hotResults,normal = normalResults else{ return 0 }
+        guard let hot = hotResults,let normal = normalResults else{ return 0 }
         
         if section == 0 && hot.count <= 0 {
         
@@ -33,26 +33,26 @@ extension CommitViewController{
         return 40
     }
     
-    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
         
         return 100
     }
     
     // 返回有几个 Section
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
         
         return 2
     }
     
     // 设置每一个Section 的 返回个数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if hotResults.count <= 0 && normalResults.count <= 0 {
             
             return section == 0 ? 0 : 1
         }
         
-        guard let hot = hotResults,noraml = normalResults else{ return 0}
+        guard let hot = hotResults,let noraml = normalResults else{ return 0}
         
         if section == 0 {
         
@@ -67,16 +67,16 @@ extension CommitViewController{
         return 0
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
         
         var comment:Comment!
         
-        if hotResults.count > 0 && indexPath.section == 0{
+        if hotResults.count > 0 && (indexPath as NSIndexPath).section == 0{
             
-            comment = hotResults[indexPath.item]
+            comment = hotResults[(indexPath as NSIndexPath).item]
         }else if normalResults.count > 0{
             
-            comment = normalResults[indexPath.item]
+            comment = normalResults[(indexPath as NSIndexPath).item]
         }
         
         if comment == nil {return 200}
@@ -87,26 +87,26 @@ extension CommitViewController{
     }
     
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
         
         if hotResults.count <= 0 && normalResults.count <= 0 {
         
-            let cell = tableView.dequeueReusableCellWithIdentifier("nocell")! as UITableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "nocell")! as UITableViewCell
             
             return cell
         }
         
         var comment:Comment!
         
-        if hotResults.count > 0 && indexPath.section == 0{
+        if hotResults.count > 0 && (indexPath as NSIndexPath).section == 0{
             
-            comment = hotResults[indexPath.item]
-        }else if normalResults.count > 0 && indexPath.section == 1{
+            comment = hotResults[(indexPath as NSIndexPath).item]
+        }else if normalResults.count > 0 && (indexPath as NSIndexPath).section == 1{
             
-            comment = normalResults[indexPath.item]
+            comment = normalResults[(indexPath as NSIndexPath).item]
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("comments") as! CommentsTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "comments") as! CommentsTableViewCell
         
         cell.setCommentMethod(comment, tableView: tableView, indexPath: indexPath)
         
@@ -115,14 +115,14 @@ extension CommitViewController{
         return cell
     }
     
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        guard let _ = hotResults,_ = normalResults else{ return nil }
+        guard let _ = hotResults,let _ = normalResults else{ return nil }
         
         if hotResults.count <= 0 && normalResults.count <= 0 && section == 0 { return nil }
         if hotResults.count > 0 && normalResults.count <= 0 && section == 1 {return nil }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("newcomments") as! CommentsTableViewHeader
+        let cell = tableView.dequeueReusableCell(withIdentifier: "newcomments") as! CommentsTableViewHeader
         
         if section == 0 {
             
@@ -138,7 +138,7 @@ extension CommitViewController{
         }
         
         let containerView = UIView(frame:cell.frame)
-        cell.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        cell.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         containerView.addSubview(cell)
         return containerView
     }

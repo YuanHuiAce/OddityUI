@@ -8,19 +8,19 @@
 import Foundation
 
 
-public class Aboutnews: JSONEncodable {
-    /** 返回请求状态码 */
-    public var code: Int32?
-    public var data: [AboutnewsData]?
-
-    public init() {}
-
-    // MARK: JSONEncodable
-    func encodeToJSON() -> AnyObject {
-        var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["code"] = self.code?.encodeToJSON()
-        nillableDictionary["data"] = self.data?.encodeToJSON()
-        let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
-    }
-}
+//open class Aboutnews: JSONEncodable {
+//    /** 返回请求状态码 */
+//    open var code: Int32?
+//    open var data: [AboutnewsData]?
+//
+//    public init() {}
+//
+//    // MARK: JSONEncodable
+//    func encodeToJSON() -> AnyObject {
+//        var nillableDictionary = [String:AnyObject?]()
+//        nillableDictionary["code"] = self.code?.encodeToJSON()
+//        nillableDictionary["data"] = self.data?.encodeToJSON()
+//        let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
+//        return dictionary as AnyObject
+//    }
+//}

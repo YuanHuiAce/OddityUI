@@ -11,6 +11,8 @@ import SnapKit
 
 class NoInterestView: UIView {
     
+    static let shareNoInterest:NoInterestView = { return NoInterestView(frame: CGRect.zero)}()
+
     lazy var label = UILabel()
     lazy var imageView = UIImageView()
     
@@ -19,53 +21,32 @@ class NoInterestView: UIView {
         
         self.clipsToBounds = true
         self.layer.cornerRadius = 8
-        self.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.8)
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         
         self.imageView.image = UIImage(named: "About")
         self.addSubview(imageView)
         
-        imageView.snp_makeConstraints { (make) in
+        imageView.snp.makeConstraints { (make) in
             
-            make.centerY.equalTo(self.snp_centerY).offset(-30)
+            make.centerY.equalTo(self.snp.centerY).offset(-30)
             make.leftMargin.equalTo(20)
         }
         
         label.text = "将减少此类推荐"
-        label.font = UIFont.systemFontOfSize(14)
-        label.textColor = UIColor.whiteColor()
-        label.textAlignment = .Center
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.white
+        label.textAlignment = .center
         
         self.addSubview(label)
         
-        label.snp_makeConstraints { (make) in
+        label.snp.makeConstraints { (make) in
             
-            make.centerY.equalTo(self.snp_centerY)
-            make.leftMargin.equalTo(self.imageView.snp_right).offset(15)
+            make.centerY.equalTo(self.snp.centerY)
+            make.leftMargin.equalTo(self.imageView.snp.right).offset(15)
         }
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    /// 获取单例模式下的UIStoryBoard对象
-    class var shareNoInterest:NoInterestView!{
-        
-        get{
-            
-            struct backTaskLeton{
-                
-                static var predicate:dispatch_once_t = 0
-                
-                static var bgTask:NoInterestView? = nil
-            }
-            
-            dispatch_once(&backTaskLeton.predicate, { () -> Void in
-                
-                backTaskLeton.bgTask = NoInterestView(frame: CGRectZero)
-            })
-            
-            return backTaskLeton.bgTask
-        }
     }
 }

@@ -8,11 +8,11 @@
 import Foundation
 
 
-public class CommentRespone: JSONEncodable {
+open class CommentRespone: JSONEncodable {
     /** 服务器返回请求处理代码 */
-    public var code: Int32?
+    open var code: Int32?
     /** 已创建的评论ID */
-    public var data: String?
+    open var data: String?
 
     public init() {}
 
@@ -20,8 +20,8 @@ public class CommentRespone: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["code"] = self.code?.encodeToJSON()
-        nillableDictionary["data"] = self.data
+        nillableDictionary["data"] = self.data as AnyObject??
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+        return dictionary as AnyObject
     }
 }

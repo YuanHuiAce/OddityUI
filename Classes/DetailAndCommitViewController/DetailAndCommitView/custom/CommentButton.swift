@@ -14,45 +14,45 @@ class CommentButton: UIButton {
         
         super.init(coder: aDecoder)
         
-        self.setTitleColor(UIColor.a_color4, forState: UIControlState.Disabled)
-        self.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        self.setTitleColor(UIColor.a_color4, for: UIControlState.disabled)
+        self.setTitleColor(UIColor.white, for: UIControlState())
         
-        self.setBackgroundColor(UIColor.a_color11, forState: UIControlState.Disabled)
-        self.setBackgroundColor(UIColor.redColor(), forState: UIControlState.Normal)
+        self.setBackgroundColor(UIColor.a_color11, forState: UIControlState.disabled)
+        self.setBackgroundColor(UIColor.red, forState: UIControlState())
         
         self.layer.cornerRadius = 2
         
         self.clipsToBounds = true
         
-        self.layer.borderWidth = enabled ? 0 : 1
-        self.layer.borderColor = enabled ? UIColor.clearColor().CGColor : UIColor.a_color4.CGColor
+        self.layer.borderWidth = isEnabled ? 0 : 1
+        self.layer.borderColor = isEnabled ? UIColor.clear.cgColor : UIColor.a_color4.cgColor
     }
     
-    override var enabled: Bool{
+    override var isEnabled: Bool{
     
         didSet{
         
-            self.layer.borderWidth = enabled ? 0 : 1
-            self.layer.borderColor = enabled ? UIColor.clearColor().CGColor : UIColor.a_color4.CGColor
+            self.layer.borderWidth = isEnabled ? 0 : 1
+            self.layer.borderColor = isEnabled ? UIColor.clear.cgColor : UIColor.a_color4.cgColor
         }
     }
 }
 
 extension UIButton {
-    func setBackgroundColor(color: UIColor?, forState state: UIControlState) {
-        guard let color = color else { return setBackgroundImage(nil, forState: state) }
-        setBackgroundImage(UIImage.imageColored(color), forState: state)
+    func setBackgroundColor(_ color: UIColor?, forState state: UIControlState) {
+        guard let color = color else { return setBackgroundImage(nil, for: state) }
+        setBackgroundImage(UIImage.imageColored(color), for: state)
     }
 }
 
 extension UIImage {
-    class func imageColored(color: UIColor) -> UIImage! {
-        let onePixel = 1 / UIScreen.mainScreen().scale
+    class func imageColored(_ color: UIColor) -> UIImage! {
+        let onePixel = 1 / UIScreen.main.scale
         let rect = CGRect(x: 0, y: 0, width: onePixel, height: onePixel)
-        UIGraphicsBeginImageContextWithOptions(rect.size, CGColorGetAlpha(color.CGColor) == 1, 0)
+        UIGraphicsBeginImageContextWithOptions(rect.size, color.cgColor.alpha == 1, 0)
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetFillColorWithColor(context, color.CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(color.cgColor)
+        context?.fill(rect)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image

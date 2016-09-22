@@ -9,70 +9,70 @@
 import RealmSwift
 
 ///  频道的数据模型
-public class Content: Object {
+open class Content: Object {
 
     /// 用于获取评论的 docid
-    dynamic public var txt: String? = nil
+    dynamic open var txt: String? = nil
 
     /// 新闻Url
-    dynamic public var img: String? = nil
+    dynamic open var img: String? = nil
 
     /// 新闻标题
-    dynamic public var vid: String? = nil
+    dynamic open var vid: String? = nil
 
 }
 
 
 
 ///  频道的数据模型
-public class NewContent: Object {
+open class NewContent: Object {
     /// 新闻ID
-    dynamic public var nid = 1
+    dynamic open var nid = 1
     /// 用于获取评论的 docid
-    dynamic public var docid = ""
+    dynamic open var docid = ""
     /// 新闻Url
-    dynamic public var url = ""
+    dynamic open var url = ""
     /// 新闻标题
-    dynamic public var title = ""
+    dynamic open var title = ""
     
     
     /// 新闻事件
-    dynamic public var ptime = ""
-    dynamic public var ptimes = NSDate()
+    dynamic open var ptime = ""
+    dynamic open var ptimes = Date()
     
     /// 新闻来源
-    dynamic public var pname = ""
+    dynamic open var pname = ""
     
     /// 来源地址
-    dynamic public var purl = ""
+    dynamic open var purl = ""
     
     /// 频道ID
-    dynamic public var channel = 0
+    dynamic open var channel = 0
     /// 正文图片数量
-    dynamic public var inum = 0
+    dynamic open var inum = 0
     
     /// 新闻标题
-    dynamic public var descr = ""
+    dynamic open var descr = ""
 
     
     /// 列表图格式，0、1、2、3
-    dynamic public var style = 0
+    dynamic open var style = 0
     
     /// 图片具体数据
     let tagsList = List<StringObject>() // Should be declared with `let`
-    public let content = List<Content>() // Should be declared with `let`
+    open let content = List<Content>() // Should be declared with `let`
     
     /// 收藏数
-    dynamic public var collect = 0
+    dynamic open var collect = 0
     /// 关心数
-    dynamic public var concern = 0
+    dynamic open var concern = 0
     /// 评论数
-    dynamic public var comment = 0
+    dynamic open var comment = 0
     
     /// 滑动的位置
-    dynamic public var scroffY: Double = 0
+    dynamic open var scroffY: Double = 0
     
-    override public static func primaryKey() -> String? {
+    override open static func primaryKey() -> String? {
         return "nid"
     }
     

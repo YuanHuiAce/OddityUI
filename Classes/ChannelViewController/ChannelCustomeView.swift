@@ -14,25 +14,25 @@ class ChannelCollectionViewCell: UICollectionViewCell {
     @IBOutlet var channelBackView:UIView!
     @IBOutlet var channelStateImageView:UIImageView!
     
-    func setChannel(channel:Channel){
+    func setChannel(_ channel:Channel){
         
-        self.channelBackView.backgroundColor = channel.id == 1 ? UIColor.hexStringToColor("#f6f6f6") : UIColor.whiteColor()
+        self.channelBackView.backgroundColor = channel.id == 1 ? UIColor.hexStringToColor("#f6f6f6") : UIColor.white
         
-        self.channelNameLabel.textColor = channel.id == 1 ? UIColor.a_color4 : UIColor.blackColor()
+        self.channelNameLabel.textColor = channel.id == 1 ? UIColor.a_color4 : UIColor.black
         self.channelNameLabel.text = channel.cname
-        self.channelStateImageView.hidden = channel.id == 1
+        self.channelStateImageView.isHidden = channel.id == 1
         self.channelStateImageView.image = channel.isdelete == 0 ? UIImage.OddityImageByName("delete") : UIImage.OddityImageByName("add")
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
-        super.drawRect(rect)
+        super.draw(rect)
         
         self.clipsToBounds = false
         
         self.channelBackView.clipsToBounds = true
         self.channelBackView.layer.borderWidth = 1
-        self.channelBackView.layer.borderColor = UIColor.hexStringToColor("#e5e5e5").CGColor
+        self.channelBackView.layer.borderColor = UIColor.hexStringToColor("#e5e5e5").cgColor
         self.channelBackView.layer.cornerRadius = 8
     }
 }
@@ -49,13 +49,13 @@ class ChannelReusableView: UICollectionReusableView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        topBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
-        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
+        topBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").withAlphaComponent(0.3)
+        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").withAlphaComponent(0.3)
         
         self.addSubview(topBorder)
         self.addSubview(bottomBorder)
         
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
         
         topBorder.snp_makeConstraints { (make) in
             
@@ -94,15 +94,15 @@ class ChannelReusableView: UICollectionReusableView {
 
 class bottomBorder: UIView {
     
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         
         let context = UIGraphicsGetCurrentContext() // 获取绘画板
-        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
-        CGContextFillRect(context, rect)
+        context?.setFillColor(UIColor.clear.cgColor)
+        context?.fill(rect)
         //下分割线
-        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5))
+        context?.setStrokeColor(UIColor.hexStringToColor("#c0c0c0").withAlphaComponent(0.3).cgColor)
+        context?.stroke(CGRect(x: 0, y: rect.height, width: rect.width, height: 0.5))
     }
 }
 
@@ -113,11 +113,11 @@ class topAndBottomBorder: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3)
+        bottomBorder.backgroundColor = UIColor.hexStringToColor("#c0c0c0").withAlphaComponent(0.3)
         
         self.addSubview(bottomBorder)
 
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
 
         bottomBorder.snp_makeConstraints { (make) in
             
@@ -128,8 +128,8 @@ class topAndBottomBorder: UIView {
         }
     }
     
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         
         
         
