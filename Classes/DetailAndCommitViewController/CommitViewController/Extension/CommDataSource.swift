@@ -66,27 +66,7 @@ extension CommitViewController{
         
         return 0
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
-        
-        var comment:Comment!
-        
-        if hotResults.count > 0 && (indexPath as NSIndexPath).section == 0{
-            
-            comment = hotResults[(indexPath as NSIndexPath).item]
-        }else if normalResults.count > 0{
-            
-            comment = normalResults[(indexPath as NSIndexPath).item]
-        }
-        
-        if comment == nil {return 200}
-        
-        let height = comment.HeightByNewConstraint(tableView)
-        
-        return height
-    }
-    
-    
+
     func tableView(_ tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
         
         if hotResults.count <= 0 && normalResults.count <= 0 {

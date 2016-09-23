@@ -157,14 +157,18 @@ class KDRearrangeableCollectionViewFlowLayout: UICollectionViewFlowLayout, UIGes
             let cv = self.collectionView {
                 
                 let pointPressedInCanvas = gestureRecognizer.location(in: ca)
-                
+            
+                if let indexPath = cv.indexPathForItem(at: pointPressedInCanvas) {
+                    
+                    if indexPath.section != 0 {return false}
+                }
+            
                 for cell in cv.visibleCells {
                     
                     let cellInCanvasFrame = ca.convert(cell.frame, from: cv)
                     
                     guard let cell = cell as? ChannelCollectionViewCell,let indexPath : IndexPath = cv.indexPath(for: cell) else{ break }
                     
-                    if indexPath.section != 0 {return false}
                     
                     if cellInCanvasFrame.contains(pointPressedInCanvas ) {
                         

@@ -12,55 +12,8 @@ import RealmSwift
 
 extension CommitViewController{
 
-    override open func viewDidLoad() {
-        
-        super.viewDidLoad()
-        
-        self.setResults()
-        self.setHeaderView()
-        
-        if let new = new {
-            
-            if new.comment <= 0 {return}
-            
-            let footer = NewRefreshFooterView {
-                
-                self.currentPage = self.currentPage + 1
-                
-                CommentUtil.LoadNoramlCommentsList(new, p: "\(self.currentPage)", c: "20", finish: { (count) in
-                    
-                    if count < 20 {
-                        
-                        self.tableView.mj_footer.endRefreshingWithNoMoreData()
-                        
-                    }else{
-                        
-                        self.tableView.mj_footer.endRefreshing()
-                    }
-                    
-                    self.tableView.reloadData()
-                    }, fail: {
-                        
-                        self.tableView.mj_footer.endRefreshing()
-                })
-            }
-            
-            self.tableView.mj_footer = footer
-        }
-        
-        self.tableView.contentInset.bottom = 44
-        
-        // 获得字体变化通知，完成刷新字体大小方法
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: FONTMODALSTYLEIDENTIFITER), object: nil, queue: OperationQueue.main) { (_) in
-            
-            self.setHeaderView()
-            self.tableView.reloadData()
-        }
-    }
-    
-    
     // 设置数据源对象
-    fileprivate func setResults(){
+    func setResults(){
         
         if let new = new {
             
@@ -74,7 +27,7 @@ extension CommitViewController{
     }
     
     // 设置表头视图
-    fileprivate func setHeaderView(){
+    func setHeaderView(){
         
         if let n  = new {
             

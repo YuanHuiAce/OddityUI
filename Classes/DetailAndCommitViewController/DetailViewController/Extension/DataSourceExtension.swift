@@ -65,20 +65,7 @@ extension DetailViewController:UITableViewDelegate,UITableViewDataSource {
         
         return cell
     }
-    
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    
-        if indexPath.section == 0 {
-            if indexPath.row == 3 { return 101 } // 如果是第三行，则固定高度 更多评论
-            return hotResults[indexPath.row].HeightByNewConstraint(tableView) // 根据评论内容返回高度
-        }
-        
-        if indexPath.section == 1 {
-            return aboutResults[indexPath.row].HeightByNewConstraint(tableView,hiddenY: self.getIsHeaderYear(indexPath)) // 根据相关内容返回高度
-        }
-        return 99
-    }
-    
+
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     
         if (self.hotResults == nil || self.hotResults.count == 0 ) && section == 0 {return nil}

@@ -9,31 +9,8 @@
 import UIKit
 import XLPagerTabStrip
 
-open class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripViewController{
+open class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripViewController,UICollectionViewDelegateFlowLayout{
 
-    /**
-     设置每一个Cell的大小。需要讲高度设置为只能允许一行的高度，否则！！  哼哼 你自己试试吧，，超级刺激的额。
-     
-     - parameter collectionView:       <#collectionView description#>
-     - parameter collectionViewLayout: <#collectionViewLayout description#>
-     - parameter indexPath:            <#indexPath description#>
-     
-     - returns: <#return value description#>
-     */
-//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//    
-//        let childController = viewControllers[(indexPath as NSIndexPath).item] as! IndicatorInfoProvider
-//        
-//        let indicatorInfo = childController.indicatorInfo(for: self)
-//        
-//        let size = CGSize(width: 500, height: 200)
-//        
-//        let returnSize = NSString(string:indicatorInfo.title).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName:UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)], context: nil).size
-//        
-////         修复当频道调整后出现两行的情况
-//        return CGSize(width: returnSize.width+(returnSize.width/2), height: collectionView.frame.height-10)
-//    }
-    
     override open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = super.collectionView(collectionView, cellForItemAt: indexPath) as? ButtonBarViewCell else {

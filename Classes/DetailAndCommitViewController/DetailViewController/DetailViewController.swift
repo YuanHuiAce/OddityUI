@@ -65,6 +65,9 @@ open class DetailViewController: UIViewController,WaitLoadProtcol {
         
         super.viewDidLoad()
         
+        self.tableView.estimatedRowHeight = 64
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        
         if let new = new {
             
             newCon = new.getNewContentObject()

@@ -73,22 +73,6 @@ class ChannelReusableView: UICollectionReusableView {
             make.height.equalTo(0.3)
         }
     }
-    
-    
-//    override func drawRect(rect: CGRect) {
-//        super.drawRect(rect)
-//        
-//        let context = UIGraphicsGetCurrentContext() // 获取绘画板
-//        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor)
-//        CGContextFillRect(context, rect)
-//        //下分割线
-//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-//        CGContextStrokeRect(context, CGRectMake(0, rect.height, rect.width, 0.5));
-//        
-//        //上分割线
-//        CGContextSetStrokeColorWithColor(context, UIColor.hexStringToColor("#c0c0c0").colorWithAlphaComponent(0.3).CGColor)
-//        CGContextStrokeRect(context, CGRectMake(0, -0.5, rect.width, 0.5));
-//    }
 }
 
 
