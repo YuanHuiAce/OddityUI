@@ -55,7 +55,10 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
             self.loadNewsDataMethod()
         }
         
-        self.refreshNewsDataMethod(del: true,create:true,show: true)
+        DispatchQueue.main.async {
+            
+            self.refreshNewsDataMethod(del: true,create:true,show: true)
+        }
     }
     
     /**
@@ -130,7 +133,7 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
                 break
             case .update(_, let deletions, let insertions, let modifications):
                 tableView.beginUpdates()
-                tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: UITableViewRowAnimation.fade)
+                tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .fade)
                 tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .bottom)
                 tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .fade)
                 tableView.endUpdates()

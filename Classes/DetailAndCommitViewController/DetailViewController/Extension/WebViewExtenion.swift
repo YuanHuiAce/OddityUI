@@ -111,6 +111,8 @@ extension DetailViewController:WKNavigationDelegate{
         
         if let n = new {
             
+            self.ShowNewCOntentInWebView(newCon)
+            
             NewAPI.GetnewContent(n.nid, finish: { (newCon) in
                 
                 self.newCon = newCon

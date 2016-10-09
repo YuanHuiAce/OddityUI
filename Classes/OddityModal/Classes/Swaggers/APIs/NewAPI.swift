@@ -29,7 +29,7 @@ extension NewAPI{
             
             if let code = data?.object(forKey: "code") as? Int , code == 4003 { return ShareLUserRequest.resetLogin() }
             
-            New.deleteIdentification(cid)
+            // New.deleteIdentification(cid)
             
             let realm = try! Realm()
             
@@ -45,13 +45,13 @@ extension NewAPI{
                         
                         self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
                     }
+                    
+                    if create && datas.count > 0 {  New.CreateIdentification(tcr, cid: cid, realm: realm) }
                 })
                 
                 let afterCount = New.DeleteBecTooMore(cid: cid, realm: realm)
                 
                 let currenCount = afterCount - beforeCount
-                
-                if create && currenCount > 0 {  New.CreateIdentification(tcr, cid: cid, realm: realm) }
                 
                 return complete("一共刷新了\(currenCount)条数据", true)
             }
@@ -82,8 +82,10 @@ extension NewAPI{
                     
                     for channel in datas {
                         
-                        if let nid = (channel as AnyObject).object(forKey: "nid") as? Int , realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject) == nil {
+                        if let nid = (channel as AnyObject).object(forKey: "nid") as? Int  {
                         
+                            if let new = realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject),new.channelList.filter("channel = %@",cid).count > 0 { return }
+                            
                             realm.create(New.self, value: channel, update: true)
                             
                             self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
@@ -322,22 +324,22 @@ private extension New{
         
         if cid == 1 {
             
-            objects = objects.filter("ishotnew = 1 AND isdelete = 0")
+            objects = objects.filter("ishotnew = 1 AND isdelete = 0 AND isidentification = 0")
         }else{
             
-            objects = objects.filter("ANY channelList.channel = %@ AND isdelete = 0 AND ishotnew = 0",cid)
+            objects = objects.filter("ANY channelList.channel = %@ AND isdelete = 0 AND ishotnew = 0 AND isidentification = 0",cid)
         }
         
-        try! realm.write {
+        if objects.count > 16 && delete {
             
-            if objects.count > 16 && delete {
-            
+            try! realm.write {
+                
                 if cid == 1 {
                     
                     let willDel = realm.objects(New.self).filter("ptimes < %@ AND ishotnew = 1", objects[15].ptimes)
                     
                     for new in willDel {
-                    
+                        
                         new.ishotnew = 0
                     }
                 }else{
@@ -347,7 +349,7 @@ private extension New{
                     for new in willDel {
                         
                         if let int = new.channelList.filter("channel = %@", cid).first {
-                        
+                            
                             realm.delete(int)
                         }
                     }
@@ -355,7 +357,6 @@ private extension New{
                 }
             }
         }
-        
         return objects.count
     }
     
@@ -392,9 +393,11 @@ private extension New{
         
         let nid = cid == 1 ? -100 : -cid
         
-        try! realm.write({
-            
-            realm.create(New.self, value: ["nid":nid,"channel": cid,"isidentification":1,"ishotnew":cid == 1 ? 1 : 0,"ptimes":date], update: true)
-        })
+        realm.create(New.self, value: ["nid":nid,"channel": cid,"isidentification":1,"ishotnew":cid == 1 ? 1 : 0,"ptimes":date], update: true)
+        
+//        try! realm.write({
+//            
+//            
+//        })
     }
 }

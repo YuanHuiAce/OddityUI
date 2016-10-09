@@ -15,23 +15,20 @@
 主要依赖的第三方框架为
 
 ````
-Using AFDateHelper (3.4.2)
-Using Alamofire (3.4.2)
-Using FLAnimatedImage (1.0.12)
-Using MJRefresh (3.1.12)
-Using PINCache (2.3)
-Using PINRemoteImage (2.1.4)
-Using Realm (1.0.2)
-Using RealmSwift (1.0.2)
-Using SnapKit (0.22.0)
-Using XLPagerTabStrip (5.0.0)
+Installing FLAnimatedImage (1.0.12)
+Installing MJRefresh (3.1.12)
+Installing PINCache (2.3)
+Installing PINRemoteImage (2.1.4)
+Installing Realm (2.0.0)
+Installing RealmSwift (2.0.0)
+Installing SnapKit (3.0.1)
+Installing XLPagerTabStrip (6.0.0)
 ````
 
 我们公司内部的框架为
 ````
-Using JMGTemplateEngine (0.0.2) // 该框架是一个大神的，但是大神没有疯装 Cocoapods 为了方便即成，自己封装了下
-Using OddityModal (1.0.2)
-Using OddityUI (1.0.1)
+Installing JMGTemplateEngine (0.0.2) // 该框架是一个大神的，但是大神没有疯装 Cocoapods 为了方便即成，自己封装了下
+Installing OddityUI (0.1.3)
 ````
 
 ------------------------
