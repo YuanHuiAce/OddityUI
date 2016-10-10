@@ -138,6 +138,11 @@ V 0.1.4
 
 * 修复刷新数据时，列表崩溃现象
 
+V 0.1.5
+
+* 修复ChannelViewControllerCached 缓存器的缓存条件。实现可以显示多个 ChannelsManagerViewController
+* 添加一个 `malloc_error_break` 的 BreakPoint 可以优化崩溃现象，继续跟进ing
+
 
 ## 未来
 

@@ -58,7 +58,7 @@ open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCont
             
             self.reloadViewControllers = self.cResults.map{
                 
-                let viewController = ChannelViewControllerCached.sharedCached.titleForViewController($0)
+                let viewController = ChannelViewControllerCached.sharedCached.titleForViewController($0,managerViewController: self)
                 
                 viewController.delegate = self
                 

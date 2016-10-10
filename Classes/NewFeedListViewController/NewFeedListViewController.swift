@@ -132,11 +132,12 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
                 tableView.reloadData()
                 break
             case .update(_, let deletions, let insertions, let modifications):
-                tableView.beginUpdates()
-                tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .fade)
-                tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .bottom)
-                tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .fade)
-                tableView.endUpdates()
+//                self?.tableView.reloadData()
+                self?.tableView.beginUpdates()
+                self?.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .fade)
+                self?.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .bottom)
+                self?.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .fade)
+                self?.tableView.endUpdates()
                 break
             case .error(let error):
                 fatalError("\(error)")

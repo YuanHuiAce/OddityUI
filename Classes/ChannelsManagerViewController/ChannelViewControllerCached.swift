@@ -8,12 +8,24 @@
 
 import UIKit
 
+class ChannelViewControllerCachedKey: NSObject {
+    
+    var channelName:String!
+    var managerViewController:UIViewController!
+    
+    init(channelName:String,managerViewController:UIViewController) {
+        
+        self.channelName = channelName
+        self.managerViewController = managerViewController
+    }
+}
+
 /// 属性字符串 缓存器
 class ChannelViewControllerCached {
     
     static let sharedCached : ChannelViewControllerCached = { return ChannelViewControllerCached()}()
     
-    lazy var cache = NSCache<AnyObject,UIViewController>()
+    lazy var cache = NSCache<ChannelViewControllerCachedKey,UIViewController>()
 
     /**
      根据提供的 title 字符串 （title 针对于频道时唯一的，可以当作唯一标识来使用）在缓存中获取UIViewController
@@ -23,9 +35,11 @@ class ChannelViewControllerCached {
      
      - returns: 返回属性字符串
      */
-    func titleForViewController(_ channel : Channel) -> NewFeedListViewController {
+    func titleForViewController(_ channel : Channel,managerViewController:UIViewController) -> NewFeedListViewController {
         
-        if let channelViewController = self.cache.object(forKey: channel.cname as AnyObject) as? NewFeedListViewController { return channelViewController }
+        let cacheKeyObject = ChannelViewControllerCachedKey(channelName: channel.cname, managerViewController: managerViewController)
+        
+        if let channelViewController = self.cache.object(forKey: cacheKeyObject) as? NewFeedListViewController { return channelViewController }
         
         let channelViewController = getDisplayViewController(channel.cname)
         
@@ -39,7 +53,7 @@ class ChannelViewControllerCached {
             channelViewController.newsResults = New.allArray().filter("(ANY channelList.channel = %@ AND isdelete = 0 ) OR ( channel = %@ AND isidentification = 1 )",channel.id,channel.id)
         }
         
-        self.cache.setObject(channelViewController, forKey: channel.cname as AnyObject)
+        self.cache.setObject(channelViewController, forKey: cacheKeyObject)
         
         return channelViewController
     }

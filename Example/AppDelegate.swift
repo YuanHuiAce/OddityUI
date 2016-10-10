@@ -24,6 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
         
+        let viewCOntroller = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
+        
+        window?.rootViewController?.view.addSubview(viewCOntroller.view)
+        
+        viewCOntroller.view.frame = CGRect(x: 0, y: 0, width: 300, height: 400)
+        
+        viewCOntroller.view.layer.borderColor = UIColor.red.cgColor
+        viewCOntroller.view.layer.borderWidth = 2
+        
         return true
     }
 
