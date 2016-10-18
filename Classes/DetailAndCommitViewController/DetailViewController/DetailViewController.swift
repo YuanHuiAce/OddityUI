@@ -43,6 +43,10 @@ extension DetailViewController{
 
 open class DetailViewController: UIViewController,WaitLoadProtcol {
     
+    var odditySetting:OdditySetting!
+    var oddityDelegate:OddityUIDelegate?
+    
+    /// 等待视图
     var webView:WKWebView!
     
     var waitView:WaitView!
@@ -87,14 +91,17 @@ open class DetailViewController: UIViewController,WaitLoadProtcol {
                 
                 }, fail: nil)
             
-            AboutUtil.getAboutListArrayData(new , finish: { (_) in
-                
-                DispatchQueue.main.async {
+            if self.odditySetting.showAboutOptions {
+            
+                AboutUtil.getAboutListArrayData(new , finish: { (_) in
                     
-                    self.tableView.reloadData()
-                }
-                
-                }, fail: nil)
+                    DispatchQueue.main.async {
+                        
+                        self.tableView.reloadData()
+                    }
+                    
+                    }, fail: nil)
+            }
         }
         
         self.tableView.contentInset.bottom = 44

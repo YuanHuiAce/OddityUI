@@ -14,14 +14,14 @@ import SafariServices
 extension DetailViewController:UITableViewDelegate,UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { return 0 } // 隐藏所有的尾部视图
-    public func numberOfSections(in tableView: UITableView) -> Int { return 2 } // 无论如何都需要现实三个section。只是有没有内容，再根据具体情况决定
+    public func numberOfSections(in tableView: UITableView) -> Int { return self.odditySetting.showAboutOptions ? 2 : 1 } // 无论如何都需要现实三个section。只是有没有内容，再根据具体情况决定
     
     // 生成头视图
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     
         if (hotResults == nil || hotResults.count == 0 ) && section == 0 {return 0} // 如果是第二个section，是热门评论，所以需要热门评论的头视图
         
-        if (aboutResults == nil || aboutResults.count == 0 ) && section == 1 {return 0} // 如果是第三个section 因为是相关观点，判断相关观点的数目之后，决定是否显示相关观点
+        if (aboutResults == nil || aboutResults.count == 0 ) && section == 1 && !self.odditySetting.showAboutOptions {return 0} // 如果是第三个section 因为是相关观点，判断相关观点的数目之后，决定是否显示相关观点
         
         return 40
     }
@@ -31,7 +31,7 @@ extension DetailViewController:UITableViewDelegate,UITableViewDataSource {
     
         if section == 0 && (hotResults != nil && hotResults.count > 0 ){ return hotResults.count > 3 ? 4 : hotResults.count } // 如果是第一个，人们评论相关的section
         
-        if section == 1 && (aboutResults != nil && aboutResults.count > 0 ){ return aboutResults.count } // 相关新闻的section
+        if section == 1 && (aboutResults != nil && aboutResults.count > 0 ) && (self.odditySetting?.showAboutOptions ?? true){ return aboutResults.count } // 相关新闻的section
         
         return 0
     }
@@ -104,19 +104,7 @@ extension DetailViewController:UITableViewDelegate,UITableViewDataSource {
             about.isRead() // 标记为已读
         }
         
-        if let url = URL(string: about.url) {
-        
-            if #available(iOS 9.0, *) {
-                let viewController = SFSafariViewController(url: url)
-                self.present(viewController, animated: true, completion: nil)
-            } else {
-                UIApplication.shared.openURL(url)
-            }
-            
-            
-        }
-        
-//        self.tableView.reloadData()
+        self.oddityDelegate?.clickAboutOptionAction?(viewController: self, urlString: about.url)
     }
 }
 

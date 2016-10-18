@@ -13,7 +13,14 @@ import RealmSwift
 
 
 open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,WaitLoadProtcol {
+    
+    open var odditySetting:OdditySetting!
+    open var oddityDelegate:OddityUIDelegate?
+    
+    var predelegate:NewslistViewControllerNoLikeDelegate!
+    
     public func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        
         let info = IndicatorInfo(title: self.title ?? " ")
         
         return info
@@ -25,7 +32,6 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
     var channel:Channel?
     var newsResults:Results<New> = New.allArray()
     
-    var delegate:NewslistViewControllerNoLikeDelegate!
     
     var hidden = true
     var timer = Timer()
@@ -44,6 +50,8 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
         
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        New.DeleteBecTooMore(cid: self.channel!.id)
         
         self.tableView.mj_header = NewRefreshHeaderView(refreshingBlock: {
             
@@ -72,11 +80,17 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
      */
     fileprivate func refreshNewsDataMethod(del delete:Bool = false,create:Bool = false,show:Bool = false){
         
+        let count = self.newsResults.count
+        
         if newsResults.count <= 0 {
             
             self.showWaitLoadView()
             
-            NewAPI.LoadNew(cid: self.channel?.id ?? 1, tcr: Date().dateByAddingHours(-1).UnixTimeString(), complete: { (message, success) in
+            NewAPI.LoadNew(cid: self.channel?.id ?? 1, tcr: Date().dateByAddingHours(-1).UnixTimeString(), complete: { ( success) in
+                
+                let aferCount = self.newsResults.count - count
+                
+                let message = aferCount > 0 ? "共加载\(aferCount)个数据" : "已经是最新内容"
                 
                 self.handleMessageShowMethod(message, show: show,bc:success ? UIColor.a_color2 : UIColor.a_noConn)
             })
@@ -92,8 +106,12 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
             
             time.dateByAddingHours(-1)
             
-            NewAPI.RefreshNew(cid: self.channel?.id ?? 1, tcr: time.UnixTimeString(), delete: delete, create: create, complete: { (message, success) in
-            
+            NewAPI.RefreshNew(cid: self.channel?.id ?? 1, tcr: time.UnixTimeString(), delete: delete, create: create, complete: { ( success) in
+                
+                let aferCount = self.newsResults.count - count
+                
+                let message = aferCount > 0 ? "共加载\(aferCount)个数据" : "已经是最新内容"
+                
                 self.handleMessageShowMethod(message, show: show,bc:success ? UIColor.a_color2 : UIColor.a_noConn)
             })
         }else{
@@ -108,7 +126,7 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
     
         if let channelId = self.channel?.id,let last = self.newsResults.last {
             
-            NewAPI.LoadNew(cid: self.channel?.id ?? 1, tcr: last.ptimes.UnixTimeString(), complete: { (message, success) in
+            NewAPI.LoadNew(cid: self.channel?.id ?? 1, tcr: last.ptimes.UnixTimeString(), complete: { ( success) in
                 
                 
             })
@@ -132,12 +150,12 @@ open class NewFeedListViewController: UIViewController,IndicatorInfoProvider,Wai
                 tableView.reloadData()
                 break
             case .update(_, let deletions, let insertions, let modifications):
-//                self?.tableView.reloadData()
-                self?.tableView.beginUpdates()
-                self?.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .fade)
-                self?.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .bottom)
-                self?.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .fade)
-                self?.tableView.endUpdates()
+                self?.tableView.reloadData()
+//                self?.tableView.beginUpdates()
+//                self?.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .fade)
+//                self?.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .bottom)
+//                self?.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .fade)
+//                self?.tableView.endUpdates()
                 break
             case .error(let error):
                 fatalError("\(error)")

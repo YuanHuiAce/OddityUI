@@ -210,7 +210,10 @@ extension DetailViewController:WKNavigationDelegate{
         
         if navigationAction.navigationType == WKNavigationType.linkActivated {
             
-//            self.goWebViewController(navigationAction.request.URL!.URLString)
+            if let urlStr = navigationAction.request.url?.absoluteString {
+            
+                self.oddityDelegate?.clickHyperlinkAction?(viewController: self, urlString: urlStr)
+            }
             
             return decisionHandler(WKNavigationActionPolicy.cancel)
         }
@@ -319,15 +322,13 @@ extension DetailViewController :WKScriptMessageHandler{
             }
         }
         
-//        if type == 1 {
-//            if let index = bodyData["index"] as? Int,let res = new?.getNewContentObject()?.getSkPhotos() {
-//                let browser = SKPhotoBrowser(photos: res)
-//                browser.initializePageIndex(index)
-//                browser.statusBarStyle = .LightContent
-//                browser.displayAction = true
-//                self.presentViewController(browser, animated: true, completion: nil)
-//            }
-//        }
+        if type == 1 {
+            
+            if let index = bodyData["index"] as? Int,let res = new?.getNewContentObject()?.allImagesArray() {
+                
+                self.oddityDelegate?.clickNewContentImageAction?(viewController: self, newContent: self.newCon, imgIndex: index,imgArray: res)
+            }
+        }
     }
     
     /**

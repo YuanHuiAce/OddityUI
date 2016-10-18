@@ -19,6 +19,10 @@ let CLICKTOCOMMENTVIEWCONTROLLER = "CLICKTOCOMMENTVIEWCONTROLLER" // 用户点�
 
 open class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,UINavigationControllerDelegate,UIViewControllerTransitioningDelegate,WaitLoadProtcol{
 
+    /// 代理
+    open var odditySetting : OdditySetting!
+    open var oddityDelegate : OddityUIDelegate?
+    
     var predelegate: PreViewControllerDelegate!
     
     //MARK: 收藏相关
@@ -95,6 +99,9 @@ open class DetailAndCommitViewController:ButtonBarPagerTabStripViewController,UI
     open override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
         detailViewController = OddityViewControllerManager.shareManager.getDetailViewController(new) // 获得详情视图
         commitViewController = OddityViewControllerManager.shareManager.getCommitViewController(new) // 获取评论视图
+        
+        detailViewController.odditySetting = self.odditySetting
+        detailViewController.oddityDelegate = self.oddityDelegate
         
         self.detailViewController.ShowF = self
         

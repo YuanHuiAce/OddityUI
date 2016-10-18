@@ -143,6 +143,12 @@ V 0.1.5
 * 修复ChannelViewControllerCached 缓存器的缓存条件。实现可以显示多个 ChannelsManagerViewController
 * 添加一个 `malloc_error_break` 的 BreakPoint 可以优化崩溃现象，继续跟进ing
 
+V 0.1.8
+
+* 新增 `OdditySetting` 来实现提供给使用者 设置 当前SDK的一些设置项
+* 新增 `OddityUIDelegate` 来实现提供给使用者 检测 用户的一些动作
+* 修复ChannelViewControllerCached 缓存器的缓存条件。之前的筛选条件选择失败，导致视图会不是唯一的
+
 
 ## 未来
 

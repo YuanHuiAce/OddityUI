@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.homepage         = "https://github.com/AimobierCocoaPods/OddityUI/"
   s.author           = { "WenZheng Jing" => "200739491@qq.com" }
   s.ios.deployment_target = '8.0'
-  s.version = '0.1.5'
+  s.version = '0.1.8'
   s.source = { :git => 'https://github.com/AimobierCocoaPods/OddityUI.git', :tag => s.version }
   s.license = 'MIT'
   s.source_files = 'Classes/**/*.swift'

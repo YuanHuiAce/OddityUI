@@ -23,19 +23,15 @@ extension NewAPI{
      - parameter create:   创建一条标示性 新闻
      - parameter complete: 完成方法
      */
-    class func RefreshNew(cid: Int, tcr: String = Date.unixTimeString,delete:Bool = false,create:Bool = true,complete:@escaping ((String,Bool)->Void)){
+    class func RefreshNew(cid: Int, tcr: String = Date.unixTimeString,delete:Bool = false,create:Bool = true,complete:@escaping ((Bool)->Void)){
     
         self.nsFedRGet(cid: "\(cid)", tcr: tcr) { (data, error) in
             
-            if let code = data?.object(forKey: "code") as? Int , code == 4003 { return ShareLUserRequest.resetLogin() }
-            
-            // New.deleteIdentification(cid)
-            
-            let realm = try! Realm()
-            
-            let beforeCount = New.DeleteBecTooMore(delete,cid: cid, realm: realm)
+            if let code = data?.object(forKey: "code") as? Int , code == 4003 { complete(false) ; return ShareLUserRequest.resetLogin() }
             
             if let code = data?.object(forKey: "code") as? Int , code == 2000,let datas = data?.object(forKey: "data") as? NSArray{
+                
+                let realm = try! Realm()
                 
                 try! realm.write({
                     
@@ -43,20 +39,16 @@ extension NewAPI{
                         
                         realm.create(New.self, value: channel, update: true)
                         
-                        self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
+                        self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm)
                     }
                     
                     if create && datas.count > 0 {  New.CreateIdentification(tcr, cid: cid, realm: realm) }
                 })
                 
-                let afterCount = New.DeleteBecTooMore(cid: cid, realm: realm)
-                
-                let currenCount = afterCount - beforeCount
-                
-                return complete("一共刷新了\(currenCount)条数据", true)
+                return complete( true)
             }
             
-            complete("无更多数据", true)
+            complete(true)
         }
     }
     
@@ -66,41 +58,35 @@ extension NewAPI{
      - parameter cid: 频道ID
      - parameter tcr: 时间参数
      */
-    class func LoadNew(cid: Int, tcr: String = Date.unixTimeString,complete:@escaping ((String,Bool)->Void)){
+    class func LoadNew(cid: Int, tcr: String = Date.unixTimeString,complete:@escaping ((Bool)->Void)){
     
         self.nsFedLGet(cid: "\(cid)", tcr: tcr) { (data, error) in
             
-            if let code = data?.object(forKey: "code") as? Int , code == 4003 { return ShareLUserRequest.resetLogin() }
+            if let code = data?.object(forKey: "code") as? Int , code == 4003 { complete(false) ; return ShareLUserRequest.resetLogin() }
             
             if let code = data?.object(forKey: "code") as? Int , code == 2000,let datas = data?.object(forKey: "data") as? NSArray{
             
                 let realm = try! Realm()
                 
-                let beforeCount = New.DeleteBecTooMore(cid: cid, realm: realm)
-            
                 try! realm.write({
                     
                     for channel in datas {
                         
                         if let nid = (channel as AnyObject).object(forKey: "nid") as? Int  {
                         
-                            if let new = realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject),new.channelList.filter("channel = %@",cid).count > 0 { return }
+                            if let new = realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject),new.channelList.filter("channel = %@",cid).count > 0 { continue }
                             
                             realm.create(New.self, value: channel, update: true)
                             
-                            self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm,ishot:(cid == 1 ? 1 : 0))
+                            self.AnalysisPutTimeAndImageList(cid,channel: channel as! NSDictionary, realm: realm)
                         }
                     }
                 })
                 
-                let afterCount = New.DeleteBecTooMore(cid: cid, realm: realm)
-                
-                let currenCount = afterCount - beforeCount
-                
-                return complete("一共刷新了\(currenCount)条数据", true)
+                return complete(true)
             }
             
-            complete("无更多数据", true)
+            complete( true)
         }
     }
     
@@ -132,6 +118,153 @@ extension NewAPI{
         }
     }
 }
+
+
+
+
+
+
+
+
+
+// MARK: private
+private extension NewAPI{
+    
+    /// 初始化一个 String Obj 对象
+    private class func initStringObject(value: String) -> StringObject{
+        
+        let stringObj = StringObject()
+        
+        stringObj.value = value
+        
+        return stringObj
+    }
+    
+    // 完善新闻事件
+    class func AnalysisPutTimeAndImageList(_ cid: Int,channel:NSDictionary,realm:Realm){
+        
+        guard let nid = channel.object(forKey: "nid") as? Int else { return }
+        
+        if let pubTime = channel.object(forKey: "ptime") as? String {
+            
+            realm.create(New.self, value: ["nid":nid,"ptimes": Date(fromString: pubTime, format: DateFormat.custom("yyyy-MM-dd HH:mm:ss"))], update: true)
+        }
+        
+        if let imageList = channel.object(forKey: "imgs") as? [String] {
+            
+            let imgList = imageList.map({ self.initStringObject(value: $0) })
+            
+            realm.create(New.self, value: ["nid":nid,"imgsList":imgList], update: true)
+        }
+        
+        if let new = realm.object(ofType: New.self, forPrimaryKey: nid){
+            
+            guard let chanObj = new.channelList.filter("channel = %@",cid).first else {
+                
+                let interObj = IntegetObject()
+                
+                interObj.channel = cid
+                
+                new.channelList.append(interObj)
+                
+                return
+            }
+        }
+    }
+    
+    /**
+     完善
+     
+     - parameter channel: <#channel description#>
+     - parameter realm:   <#realm description#>
+     */
+    class func AnalysisNewContents(_ channel:NSDictionary,realm:Realm){
+        
+        if let nid = channel.object(forKey: "nid") as? Int {
+            
+            if let tagList = channel.object(forKey: "tags") as? [String] {
+                
+                let tagsList = tagList.map({ self.initStringObject(value: $0) })
+                
+                realm.create(NewContent.self, value: ["nid":nid,"tags":tagsList], update: true)
+            }
+        }
+    }
+}
+
+private extension Date{
+    
+    /// 当前时间的 UNix 时间戳
+    static var unixTimeString:String{ return "\(Int64(Date().timeIntervalSince1970*1000))" }
+}
+
+extension New{
+    
+    /**
+     根据 提供的频道ID 删除过多的 新闻，主要用于用户刚刚进入频道视图 下拉刷新的额时候 进行的操作
+     
+     - parameter cid:   频道ID
+     - parameter realm: 数据库操作对象
+     */
+    class func DeleteBecTooMore(cid:Int) -> Int{
+        
+        let realm = try! Realm()
+        
+        let objects = realm.objects(New.self).sorted(byProperty: "ptimes", ascending: false).filter("ANY channelList.channel = %@ AND isdelete = 0 AND isidentification = 0",cid)
+        
+        if objects.count > 16 {
+            
+            try! realm.write {
+                
+                let willDel = objects.filter("ptimes < %@ ", objects[15].ptimes)
+                
+                for new in willDel {
+                    
+                    if let int = new.channelList.filter("channel = %@", cid).first {
+                        
+                        realm.delete(int)
+                    }
+                }
+            }
+        }
+        return objects.count
+    }
+
+    
+    /**
+     根据提供的频道ID 创建 标示 新闻对象
+     
+     - parameter tcr:   创建对比时间
+     - parameter cid:   频道ID
+     - parameter realm: 数据库操作对象
+     */
+    class func CreateIdentification(_ tcr:String,cid:Int,realm:Realm){
+        
+        let date = Date(timeIntervalSince1970: ((tcr as NSString).doubleValue+1)/1000)
+        
+        let nid = cid == 1 ? -100 : -cid
+        
+        realm.create(New.self, value: ["nid":nid,"channel": cid,"isidentification":1,"ishotnew":cid == 1 ? 1 : 0,"ptimes":date], update: true)
+        
+        //        try! realm.write({
+        //
+        //            
+        //        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -231,173 +364,5 @@ class NewAPI {
         SimpleRequest.budileRequest(URLString, method: .get, parameters: convertedParameters, encoding: URLEncoding.default, headers:nil).request(completionHandler: { (data, _, _) in
             completion(data as AnyObject?, nil)
         })
-    }
-}
-
-
-// MARK: private
-private extension NewAPI{
-
-    // 完善新闻事件
-    class func AnalysisPutTimeAndImageList(_ cid: Int,channel:NSDictionary,realm:Realm,ishot:Int=0){
-        
-        guard let nid = channel.object(forKey: "nid") as? Int else { return }
-        
-        if let pubTime = channel.object(forKey: "ptime") as? String {
-            
-            let date = Date(fromString: pubTime, format: DateFormat.custom("yyyy-MM-dd HH:mm:ss"))
-            
-            realm.create(New.self, value: ["nid":nid,"ptimes":date], update: true)
-        }
-        
-        if let imageList = channel.object(forKey: "imgs") as? NSArray {
-            
-            var array = [StringObject]()
-            
-            imageList.enumerateObjects({ (imageUrl, _, _) in
-                
-                let sp = StringObject()
-                sp.value = imageUrl as! String
-                array.append(sp)
-            })
-            
-            realm.create(New.self, value: ["nid":nid,"imgsList":array], update: true)
-        }
-        
-        if let new = realm.object(ofType: New.self, forPrimaryKey: nid as AnyObject) {
-            
-            if let intObj = new.channelList.filter("channel = %@",cid).first { } else {
-            
-                let sp = IntegetObject()
-                sp.channel = cid
-                new.channelList.append(sp)
-            }
-        }
-        
-        realm.create(New.self, value: ["nid":nid,"ishotnew":ishot], update: true)
-    }
-    
-    /**
-     完善
-     
-     - parameter channel: <#channel description#>
-     - parameter realm:   <#realm description#>
-     */
-    class func AnalysisNewContents(_ channel:NSDictionary,realm:Realm){
-        
-        if let nid = channel.object(forKey: "nid") as? Int {
-            
-            if let imageList = channel.object(forKey: "tags") as? NSArray {
-                
-                var array = [StringObject]()
-                
-                imageList.enumerateObjects({ (imageUrl, _, _) in
-                    
-                    let sp = StringObject()
-                    sp.value = imageUrl as! String
-                    array.append(sp)
-                })
-                
-                realm.create(NewContent.self, value: ["nid":nid,"tags":array], update: true)
-            }
-        }
-    }
-}
-
-private extension Date{
-    
-    /// 当前时间的 UNix 时间戳
-    static var unixTimeString:String{ return "\(Int64(Date().timeIntervalSince1970*1000))" }
-}
-
-private extension New{
-    
-    /**
-     根据 提供的频道ID 删除过多的 新闻，主要用于用户刚刚进入频道视图 下拉刷新的额时候 进行的操作
-     
-     - parameter cid:   频道ID
-     - parameter realm: 数据库操作对象
-     */
-    class func DeleteBecTooMore(_ delete:Bool = false,cid:Int,realm:Realm) -> Int{
-        
-        var objects = realm.objects(New.self).sorted(byProperty: "ptimes", ascending: false)
-        
-        if cid == 1 {
-            
-            objects = objects.filter("ishotnew = 1 AND isdelete = 0 AND isidentification = 0")
-        }else{
-            
-            objects = objects.filter("ANY channelList.channel = %@ AND isdelete = 0 AND ishotnew = 0 AND isidentification = 0",cid)
-        }
-        
-        if objects.count > 16 && delete {
-            
-            try! realm.write {
-                
-                if cid == 1 {
-                    
-                    let willDel = realm.objects(New.self).filter("ptimes < %@ AND ishotnew = 1", objects[15].ptimes)
-                    
-                    for new in willDel {
-                        
-                        new.ishotnew = 0
-                    }
-                }else{
-                    
-                    let willDel = realm.objects(New.self).filter("ptimes < %@ AND ishotnew = 0", objects[15].ptimes)
-                    
-                    for new in willDel {
-                        
-                        if let int = new.channelList.filter("channel = %@", cid).first {
-                            
-                            realm.delete(int)
-                        }
-                    }
-                    
-                }
-            }
-        }
-        return objects.count
-    }
-    
-    /**
-     根据提供的 频道 ID 删除 标示 新闻对象
-     
-     - parameter cid:   频道ID
-     - parameter realm: 数据库操作对象
-     */
-    class func DeleteIdentification(_ cid:Int,realm:Realm){
-        
-        try! realm.write({
-            
-            if cid == 1 {
-                
-                realm.delete(realm.objects(New).filter("isidentification = 1 AND ishotnew = 1"))
-            }else{
-                
-                realm.delete(realm.objects(New).filter("isidentification = 1 AND channel = %@",cid))
-            }
-        })
-    }
-    
-    /**
-     根据提供的频道ID 创建 标示 新闻对象
-     
-     - parameter tcr:   创建对比时间
-     - parameter cid:   频道ID
-     - parameter realm: 数据库操作对象
-     */
-    class func CreateIdentification(_ tcr:String,cid:Int,realm:Realm){
-        
-        let date = Date(timeIntervalSince1970: ((tcr as NSString).doubleValue+1)/1000)
-        
-        let nid = cid == 1 ? -100 : -cid
-        
-        realm.create(New.self, value: ["nid":nid,"channel": cid,"isidentification":1,"ishotnew":cid == 1 ? 1 : 0,"ptimes":date], update: true)
-        
-//        try! realm.write({
-//            
-//            
-//        })
     }
 }

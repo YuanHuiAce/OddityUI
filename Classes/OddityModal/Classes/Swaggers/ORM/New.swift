@@ -115,27 +115,6 @@ open class New: Object {
 public extension New{
     
     /**
-     删除标注
-     
-     - parameter cid: 频道ID
-     */
-    public class func deleteIdentification(_ cid:Int){
-        
-        let realm = try! Realm()
-        // 删除标记当前频道的标记对象
-        try! realm.write({
-            if cid == 1 {
-                
-                realm.delete(realm.objects(New).filter("isidentification = 1 AND ishotnew = 1"))
-            }else{
-                
-                realm.delete(realm.objects(New).filter("isidentification = 1 AND channel = %@",cid))
-            }
-        })
-    }
-    
-    
-    /**
      讲新闻设置为已读
      */
     public func isRead(){

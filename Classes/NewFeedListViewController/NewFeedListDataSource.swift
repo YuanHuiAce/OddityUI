@@ -206,7 +206,8 @@ extension NewFeedListViewController:UITableViewDataSource{
         }
         
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(delayInSeconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { // 2
-            self.delegate.ClickNoLikeButtonOfUITableViewCell?(cell, finish: { (cancel) in
+            
+            self.predelegate.ClickNoLikeButtonOfUITableViewCell?(cell, finish: { (cancel) in
                 
                 if !cancel {
                     
@@ -249,6 +250,9 @@ extension NewFeedListViewController:UITableViewDelegate{
         }
         
         let viewController = OddityViewControllerManager.shareManager.getDetailAndCommitViewController(new)
+        
+        viewController.odditySetting = self.odditySetting
+        viewController.oddityDelegate = self.oddityDelegate
         
         self.show(viewController, sender: nil)
         

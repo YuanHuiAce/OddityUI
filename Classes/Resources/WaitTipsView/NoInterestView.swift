@@ -23,7 +23,7 @@ class NoInterestView: UIView {
         self.layer.cornerRadius = 8
         self.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         
-        self.imageView.image = UIImage(named: "About")
+        self.imageView.image = UIImage.OddityImageByName("About")
         self.addSubview(imageView)
         
         imageView.snp.makeConstraints { (make) in

@@ -78,3 +78,22 @@ open class NewContent: Object {
     
 }
 
+
+public extension NewContent {
+
+    /// 获取全部的图片地址集合
+    func allImagesArray() -> [String] {
+        
+        var array = [String]()
+        
+        for con in self.content {
+        
+            if let img = con.img {
+                
+                array.append(img)
+            }
+        }
+     
+        return array
+    }
+}

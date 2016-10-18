@@ -22,7 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         ChannelAPI.nsChsGet()
         
-        window?.rootViewController = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
+        let viewController = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
+
+        viewController.odditySetting.showAboutOptions = false
+        viewController.oddityDelegate = self
+        
+        window?.rootViewController = viewController
         
         let viewCOntroller = OddityViewControllerManager.shareManager.getsChannelsManagerViewController()
         
@@ -61,3 +66,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+
+
+
+extension AppDelegate:OddityUIDelegate {
+
+    
+    func clickAboutOptionAction(viewController: UIViewController, urlString: String) {
+        
+        print(urlString)
+    }
+    
+    func clickHyperlinkAction(viewController: UIViewController, urlString: String) {
+        
+        print(urlString)
+    }
+    
+    func clickNewContentImageAction(viewController: UIViewController, newContent: NewContent, imgIndex: Int, imgArray: [String]) {
+        
+        print(imgIndex)
+    }
+}

@@ -11,7 +11,11 @@ import SnapKit
 import RealmSwift
 import XLPagerTabStrip
 
+
 open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewController {
+    
+    open let odditySetting = OdditySetting()
+    open var oddityDelegate:OddityUIDelegate?
     
     // 不喜欢按钮集合
     @IBOutlet var button1: ReasonButton!
@@ -29,8 +33,6 @@ open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCont
     
     internal var standardViewControllers = [UIViewController]() // 为了防止重新加载时图，新建一个视图集合库
     internal var reloadViewControllers = [UIViewController]() // buttonBarViewController 数据源对象集合
-    
-//    _ = shareBackView
     
     let shareBackView :UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
@@ -60,7 +62,8 @@ open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCont
                 
                 let viewController = ChannelViewControllerCached.sharedCached.titleForViewController($0,managerViewController: self)
                 
-                viewController.delegate = self
+                viewController.odditySetting = self.odditySetting
+                viewController.oddityDelegate = self.oddityDelegate
                 
                 return viewController
             }
