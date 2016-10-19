@@ -10,7 +10,6 @@ import UIKit
 import WebKit
 import MJRefresh
 import RealmSwift
-import XLPagerTabStrip
 
 extension DetailViewController{
     

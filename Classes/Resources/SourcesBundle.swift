@@ -8,14 +8,14 @@
 
 import UIKit
 
-extension Bundle {
+public extension Bundle {
     
     /**
      获取 StoryBoard 的 Bundle 对象
      
      - returns: <#return value description#>
      */
-    class func OddityBundle() -> Bundle{
+    public class func OddityBundle() -> Bundle{
     
         let podBundle = Bundle(for: OddityViewControllerManager.classForCoder())
         

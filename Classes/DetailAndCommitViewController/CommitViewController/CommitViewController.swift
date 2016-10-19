@@ -8,7 +8,6 @@
 
 import UIKit
 import RealmSwift
-import XLPagerTabStrip
 
 open class CommitViewController: UIViewController,IndicatorInfoProvider {
     public func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {

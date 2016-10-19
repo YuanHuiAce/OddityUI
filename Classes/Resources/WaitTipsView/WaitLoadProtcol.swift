@@ -20,7 +20,7 @@ extension WaitLoadProtcol where Self:UIViewController{
         shareNoInterest.alpha = 1
         self.view.addSubview(shareNoInterest)
         
-        shareNoInterest.imageView.image = UIImage(named: imgName)
+        shareNoInterest.imageView.image = UIImage.OddityImageByName(imgName)
         shareNoInterest.label.text = title
 
         shareNoInterest.snp_makeConstraints { (make) in

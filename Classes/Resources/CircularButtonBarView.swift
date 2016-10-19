@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XLPagerTabStrip
 
 open class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripViewController,UICollectionViewDelegateFlowLayout{
 
@@ -33,6 +32,21 @@ open class CircularButtonBarPagerTabStripViewController:ButtonBarPagerTabStripVi
         return UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
     }
 }
+
+
+public enum PagerScroll {
+    case no
+    case yes
+    case scrollOnlyIfOutOfScreen
+}
+
+public enum SelectedBarAlignment {
+    case left
+    case center
+    case right
+    case progressive
+}
+
 
 open class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
 
@@ -61,12 +75,12 @@ open class CircularButtonBarView: UICollectionView,UIScrollViewDelegate {
         addSubview(selectedBar)
     }
 
-    open func moveToIndex(_ toIndex: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
-        selectedIndex = toIndex
+    open func moveTo(index: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
+        selectedIndex = index
         updateSelectedBarPosition(animated, swipeDirection: swipeDirection, pagerScroll: pagerScroll)
     }
     
-    open func moveFromIndex(_ fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
+    open func move(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat,pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
         
         let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame

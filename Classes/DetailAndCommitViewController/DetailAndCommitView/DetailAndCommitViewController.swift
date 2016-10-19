@@ -8,7 +8,6 @@
 
 import UIKit
 import RealmSwift
-import XLPagerTabStrip
 
 
 let CLICKTOCOMMENTVIEWCONTROLLER = "CLICKTOCOMMENTVIEWCONTROLLER" // 用户点击想要去评论视图

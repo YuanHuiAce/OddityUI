@@ -10,12 +10,11 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*.swift'
 
 
-  s.resource_bundles = { "OdditBundle" => "Classes/**/*.{xcassets,storyboard,html,js,css}" }
+  s.resource_bundles = { "OdditBundle" => "Classes/**/**/*.{xcassets,storyboard,html,js,css,xib}" }
 
   s.dependency 'RealmSwift'
   s.dependency 'JMGTemplateEngine'
   s.dependency 'PINRemoteImage'
   s.dependency 'MJRefresh'
   s.dependency 'SnapKit'
-  s.dependency 'XLPagerTabStrip'
 end

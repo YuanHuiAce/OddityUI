@@ -9,39 +9,26 @@
 import UIKit
 import SnapKit
 import RealmSwift
-import XLPagerTabStrip
-
 
 open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewController {
     
-    open let odditySetting = OdditySetting()
-    open var oddityDelegate:OddityUIDelegate?
+    open let odditySetting = OdditySetting() // 用户对于SDK的设置
+    open var oddityDelegate:OddityUIDelegate? // 用户对Sdk的动作的监测
     
-    // 不喜欢按钮集合
-    @IBOutlet var button1: ReasonButton!
-    @IBOutlet var button2: ReasonButton!
-    @IBOutlet var button3: ReasonButton!
-    @IBOutlet var button4: ReasonButton!
-    @IBOutlet var noLikeChosseView: UIView!
-
-    @IBOutlet var noLikeChosseViewTopCOnstraint: NSLayoutConstraint!
-    
-    fileprivate var ChannelBackView:UIView!
-    
-    fileprivate var notificationToken:NotificationToken!
-    fileprivate var cResults:Results<Channel> = Channel.NormalChannelArray()
-    
-    internal var standardViewControllers = [UIViewController]() // 为了防止重新加载时图，新建一个视图集合库
+    fileprivate var notificationToken:NotificationToken! // 检测 新闻变化的 通知对象
+    fileprivate var cResults:Results<Channel> = Channel.NormalChannelArray() // 当前视图的新闻数据集合
     internal var reloadViewControllers = [UIViewController]() // buttonBarViewController 数据源对象集合
     
-    let shareBackView :UIView = {
+    /// 原因选择视图
+    fileprivate var chooseView:ChooseView?
+    /// 展示当用户点击X号显示的背景View
+    fileprivate let shareBackView :UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         return view
     }()
     
     override open func viewDidLoad() {
-        settings.style.selectedBarHeight = 1.5
         
         super.viewDidLoad()
         
@@ -70,6 +57,8 @@ open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCont
             
             self.reloadPagerTabStripView()
         }
+        
+        self.initStyleMethod()
     }
     
     //MARK: PagerTabStripViewControllerDataSource
@@ -97,6 +86,57 @@ open class ChannelsManagerViewController: CircularButtonBarPagerTabStripViewCont
 
 public extension ChannelsManagerViewController{
 
+    /// 初始化布局
+    fileprivate func initStyleMethod(){
+    
+        self.view.backgroundColor = UIColor.white
+        
+        let navView = BottomBoderView()
+        navView.clipsToBounds = true
+        self.view.insertSubview(navView, belowSubview: self.buttonBarView)
+        
+        let button = UIButton()
+        button.backgroundColor = UIColor.white
+        button.addAction(events: UIControlEvents.touchUpInside) { (_) in
+            
+            self.present(OddityViewControllerManager.shareManager.getChannelViewController(), animated: true, completion: nil)
+        }
+        button.setImage(UIImage.OddityImageByName("添加频道"), for: UIControlState.normal)
+        navView.addSubview(button)
+        
+        navView.snp.makeConstraints { (make) in
+            
+            make.top.equalTo(20)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.height.equalTo(44)
+        }
+        
+        button.snp.makeConstraints { (make) in
+            
+            make.top.equalTo(0)
+            make.right.equalTo(0)
+            make.bottom.equalTo(-0.5)
+            make.width.equalTo(44)
+        }
+        
+        self.buttonBarView.snp.makeConstraints { (make) in
+            
+            make.left.equalTo(0)
+            make.right.equalTo(-44)
+            make.height.equalTo(43.5)
+            make.top.equalTo(20)
+        }
+        
+        self.containerView.snp.makeConstraints { (make) in
+            
+            make.top.equalTo(navView.snp.bottom)
+            make.bottom.equalTo(0)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+    }
+    
     // 初始化分页视图方法
     fileprivate func initialPagerTabStripMethod(){
         
@@ -107,8 +147,6 @@ public extension ChannelsManagerViewController{
         buttonBarView.backgroundColor = UIColor.white // 设置标题模块的背景颜色
         buttonBarView.selectedBar.backgroundColor = UIColor(red: 53/255, green:166/255, blue: 251/255, alpha: 0.3) // 设置选中的barview 的背景颜色
         settings.style.buttonBarItemBackgroundColor = UIColor.clear // 设置ButtonItem 背景颜色
-        
-        //        self.ChannelManagerContainerCollectionView.scrollsToTop = false
         
         changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in // 设置滑动时改编字体
             
@@ -130,25 +168,15 @@ public extension ChannelsManagerViewController{
 
 
 
-extension ChannelsManagerViewController :NewslistViewControllerNoLikeDelegate{
+extension ChannelsManagerViewController :NewslistViewControllerNoLikeDelegate ,ChooseDelegate{
     
-    struct WTFFFFF {
-        
-        static var finish: ((_ cancel: Bool) -> Void)!
-    }
     
-    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        
-        if !self.noLikeChosseView.isHidden{
-            
-            self.HideNoLikeHandleViewButton(finish:WTFFFFF.finish)
-        }
-    }
     
+    /// 当用户点击 X 号 触发的事件
     func ClickNoLikeButtonOfUITableViewCell(_ cell: NewBaseTableViewCell, finish: @escaping ((_ cancel: Bool) -> Void)) {
         
-        if !self.noLikeChosseView.isHidden {
-            
+        if let view = self.chooseView {
+        
             self.HideNoLikeHandleViewButton(finish:finish)
         }else{
             
@@ -158,73 +186,101 @@ extension ChannelsManagerViewController :NewslistViewControllerNoLikeDelegate{
         }
     }
     
+    
+    struct WTFFFFF {
+        
+        static var finish: ((_ cancel: Bool) -> Void)!
+    }
+    
+    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+        self.HideNoLikeHandleViewButton(finish:WTFFFFF.finish)
+    }
+    
+
+    
     fileprivate func HideNoLikeHandleViewButton(_ cancel:Bool=true,finish: @escaping ((_ cancel: Bool) -> Void)){
         
-        UIView.animate(withDuration: 0.2, animations: {
-            
-            self.noLikeChosseView.alpha = 0
-        }) 
+        if let cview = self.chooseView {
         
-        
-        UIView.animate(withDuration: 0.3, animations: {
+            UIView.animate(withDuration: 0.2, animations: {
+                
+                cview.alpha = 0
+            })
             
-            self.noLikeChosseView.transform = self.noLikeChosseView.transform.translatedBy(x: 0, y: -self.noLikeChosseView.frame.height)
-            
-        }, completion: { (_) in
-            
-            self.noLikeChosseView.isHidden = true
             
             UIView.animate(withDuration: 0.3, animations: {
                 
-                self.shareBackView.alpha = 0
+                cview.transform = cview.transform.translatedBy(x: 0, y: -cview.frame.height)
                 
                 }, completion: { (_) in
                     
-                    finish(cancel)
+                    cview.isHidden = true
+                    
+                    UIView.animate(withDuration: 0.3, animations: {
+                        
+                        self.shareBackView.alpha = 0
+                        
+                        }, completion: { (_) in
+                            
+                            finish(cancel)
+                            
+                            self.chooseView?.isHidden = true
+                            self.chooseView = nil
+                    })
             })
-        }) 
-        
-        
+        }
     }
     
     fileprivate func ShowNoLikeHandleViewButton(_ cell: NewBaseTableViewCell,finish: @escaping ((_ cancel: Bool) -> Void)){
         
         
-        let tapCell = UITapGestureRecognizer { (tap) in
+        /// d昂用户点击这个cell 隐藏的同时 清楚该点击事件
+        cell.addGestureRecognizer(UITapGestureRecognizer { (tap) in
             
             cell.removeGestureRecognizer(tap)
             
             self.HideNoLikeHandleViewButton(finish:finish)
-        }
+        })
         
-        cell.addGestureRecognizer(tapCell)
-        
+        /// 当用户点击背景图也是如此
         self.shareBackView.addGestureRecognizer(UITapGestureRecognizer(block: { (_) in
             
             self.HideNoLikeHandleViewButton(finish:finish)
         }))
         
+        let cview = ViewLoader<ChooseView>.View(viewIndex: 0)
         
-        self.button1.clickSelected = false
-        self.button2.clickSelected = false
-        self.button3.clickSelected = false
-        self.button4.clickSelected = false
+        cview.delegate = self
+        
+        cview.button1.clickSelected = false
+        cview.button2.clickSelected = false
+        cview.button3.clickSelected = false
+        cview.button4.clickSelected = false
         
         self.shareBackView.alpha = 0
         self.shareBackView.isHidden = false
-        self.view.insertSubview(self.shareBackView, belowSubview: self.noLikeChosseView) // 初始化背景视图
+        self.view.addSubview(cview)
+        self.view.insertSubview(self.shareBackView, belowSubview: cview) // 初始化背景视图
         
         cell.frame = cell.convert(cell.bounds, to: self.view)
         self.view.addSubview(cell) // 添加Cell
         
-        self.noLikeChosseViewTopCOnstraint.constant = cell.frame.origin.y+cell.frame.height // 设置显示的约束大笑
+        cview.snp.updateConstraints { (make) in
+            
+            make.width.equalTo(self.view)
+            make.height.equalTo(128)
+            make.left.equalTo(0)
+            make.top.equalTo(cell.frame.origin.y+cell.frame.height)
+        }
+        
         self.view.layoutIfNeeded()
         
-        self.button4.setTitle("  来源:\(cell.pubLabel.text!)  ", for: UIControlState())
-        self.noLikeChosseView.transform = cell.transform.translatedBy(x: 0, y: -self.noLikeChosseView.frame.height)
+        cview.button4.setTitle("  来源:\(cell.pubLabel.text!)  ", for: UIControlState())
+        cview.transform = cell.transform.translatedBy(x: 0, y: -cview.frame.height)
         
-        self.noLikeChosseView.alpha = 0
-        self.noLikeChosseView.isHidden = false
+        cview.alpha = 0
+        cview.isHidden = false
         
         UIView.animate(withDuration: 0.3, animations: {
             
@@ -234,51 +290,22 @@ extension ChannelsManagerViewController :NewslistViewControllerNoLikeDelegate{
             
             UIView.animate(withDuration: 0.3, animations: {
                 
-                self.noLikeChosseView.transform = CGAffineTransform.identity
+                cview.transform = CGAffineTransform.identity
             }) 
             
             UIView.animate(withDuration: 0.5, animations: {
                 
-                self.noLikeChosseView.alpha = 1
+                cview.alpha = 1
             })
-        }) 
+        })
+        
+        self.chooseView = cview
     }
     
-    @IBAction func ClickManager(_ sender: AnyObject) {
-        
-        let viewController = OddityViewControllerManager.shareManager.getChannelViewController()
-        
-        self.present(viewController, animated: true, completion: nil)
-    }
-    
-    @IBAction func ClickNoLikeButton(_ sender: AnyObject) {
+    func ClickDisLikeAction() {
         
         self.HideNoLikeHandleViewButton(false,finish:WTFFFFF.finish)
     }
 }
 
 
-///  原因按钮
-class ReasonButton:UIButton {
-    
-    var clickSelected = false{
-        
-        didSet{
-            
-            self.layer.borderColor = clickSelected ? UIColor.red.withAlphaComponent(0.7).cgColor : UIColor.lightGray.cgColor
-        }
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.layer.borderColor = UIColor.lightGray.cgColor
-        self.layer.borderWidth = 1
-    }
-    
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        
-        self.clickSelected = !clickSelected
-    }
-}
