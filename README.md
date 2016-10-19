@@ -149,6 +149,10 @@ V 0.1.8
 * 新增 `OddityUIDelegate` 来实现提供给使用者 检测 用户的一些动作
 * 修复ChannelViewControllerCached 缓存器的缓存条件。之前的筛选条件选择失败，导致视图会不是唯一的
 
+V 0.1.9
+
+* 修改 `ChannelsManagerViewController` 为手码
+* 一些优化
 
 ## 未来
 
